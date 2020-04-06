@@ -1,6 +1,7 @@
 ---
 layout: post
 title: About
+permalink: /about/
 ---
 
 Hi! My name is Nikhil. I am an undergrad at Manipal Institute of Technology studying Mechatronics. I am interested in Deep Learning with a specialization in Computer Vision and Data Analytics.

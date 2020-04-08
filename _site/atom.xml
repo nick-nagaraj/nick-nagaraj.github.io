@@ -4,7 +4,7 @@
  <title>Nikhil Nagaraj</title>
  <link href="http://localhost:4000/atom.xml" rel="self"/>
  <link href="http://localhost:4000/"/>
- <updated>2020-04-08T20:13:30+05:30</updated>
+ <updated>2020-04-08T20:45:38+05:30</updated>
  <id>http://localhost:4000</id>
  <author>
    <name>Nikhil Nagaraj</name>
@@ -308,6 +308,8 @@ The above image illustrates the process to input our training data into the mode
   &lt;li&gt;Choose a more complex model&lt;/li&gt;
   &lt;li&gt;Visit data augmentation options&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;p&gt;Next week, we’ll be looking more in-depth into training parameters to boost model performance. We’ll also look into how you can plug in other pretrained models available to us.&lt;/p&gt;
 </content>
  </entry>
  

@@ -276,3 +276,5 @@ What can we possibly do to improve model performance?
 1. Increase training data samples
 2. Choose a more complex model
 3. Visit data augmentation options
+
+Next week, we'll be looking more in-depth into training parameters to boost model performance. We'll also look into how you can plug in other pretrained models available to us.

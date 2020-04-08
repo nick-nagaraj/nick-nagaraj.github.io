@@ -1,6 +1,7 @@
 ---
 layout: post
-title: License Plate Transcription using Object Detection (Part - 1)
+title: License Plate Transcription using Object Detection (Part 1)
+permalink: objdetect-1
 ---
 
 Today, we'll be looking at how to train your own object detection model that will learn to detect characters on a license plate (Part 1). Next, we'll build some logic to translate our detections into a meaningful number (Part 2).

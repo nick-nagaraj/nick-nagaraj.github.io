@@ -4,7 +4,7 @@ tagline:             'Student'
 description:         'Deployed on Github Pages'
 url:                 nick-nagaraj.github.io
 baseurl:             ''
-paginate:            5
+paginate:            1
 permalink:           pretty
 
 # About/contact

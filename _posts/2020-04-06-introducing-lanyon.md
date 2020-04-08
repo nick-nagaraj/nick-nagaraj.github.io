@@ -13,7 +13,7 @@ This is my neat little space to compile the things that I learn. It will hopeful
 ### What will it cover?
 
 It will potentially cover the following topics:
-* Research paper analysis (and potentially an implmentation)
+* Research paper analysis (and potentially an implementation)
 * Projects I'm currently working on
 * Projects I plan to work on
 * Kaggle challenges and personal solutions

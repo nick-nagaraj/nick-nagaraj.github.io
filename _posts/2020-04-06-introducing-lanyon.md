@@ -20,9 +20,4 @@ It will potentially cover the following topics:
 * Other interesting topics and studies
 
 
-### How can we chat?
-You can:
-* Shoot me an email at nikhilnagaraj12@gmail.com
-* Message me on my <a href="https://www.linkedin.com/in/nikhil-nagaraj-269391158">linkedin</a>
-
 Thanks!

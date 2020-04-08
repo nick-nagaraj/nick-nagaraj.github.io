@@ -12,6 +12,8 @@ Today, we'll be looking at how to train your own object detection model that wil
 ## What other methods exist?
 A license plate can be considered a block of text. Those of you familiar with OpenCV might realize that the library offers the [EAST Text Detector](https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/) to localize a continous block of text. However, this merely identifies the location of the text, and not the contents of the text itself.
 
+![EAST](/assets/EAST.gif)
+
 For the actual character recognition, you make take advantage of an OCR algorithm called [pytesseract](https://pypi.org/project/pytesseract/). Passing the localized region of text obtained from our text detection algorithm to our OCR algorithm.
 
 ### Why Deep Learning then?

@@ -1,20 +1,18 @@
 ---
 layout: post
-title: License Plate Transcription using Object Detection
+title: License Plate Transcription using Object Detection (Part - 1)
 ---
 
-Today, we'll be looking at how to train your own object detection model that will learn to detect characters on a license plate. Next, we'll build some logic to translate our detections into a meaningful number.
+Today, we'll be looking at how to train your own object detection model that will learn to detect characters on a license plate (Part 1). Next, we'll build some logic to translate our detections into a meaningful number (Part 2).
 
 > I will not be going over installation of the required packages. This bit of information is highly variable across systems and is best left to the reader to take care of. However, I will include resources on the mainstream installation methods.
 
- Finally, we'll be looking into deployment onto [ZEIT](https://zeit.co/), so that it may be accessed through the internet for anyone to test.
+ Finally, we'll be looking into deployment onto [ZEIT](https://zeit.co/), so that it may be accessed through the internet for anyone to test. (Part 2)
 
 ## What other methods exist?
 A license plate can be considered a block of text. Those of you familiar with OpenCV might realize that the library offers the [EAST Text Detector](https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/) to localize a continous block of text. However, this merely identifies the location of the text, and not the contents of the text itself.
 
 For the actual character recognition, you make take advantage of an OCR algorithm called [pytesseract](https://pypi.org/project/pytesseract/). Passing the localized region of text obtained from our text detection algorithm to our OCR algorithm.
-
-![EAST](/assets/EAST.gif)
 
 ### Why Deep Learning then?
 
@@ -269,3 +267,11 @@ Some not so perfect detections:
 ![Test_4.png](/assets/Test_4.png)
 
 The model is by no means perfect yet. But it's performance has already exceeded what current OCR algorithms are capable of!
+
+## Improvements
+
+What can we possibly do to improve model performance?
+
+1. Increase training data samples
+2. Choose a more complex model
+3. Visit data augmentation options

@@ -1,0 +1,268 @@
+I"�|<p>Today, we’ll be looking at how to train your own object detection model that will learn to detect characters on a license plate (Part 1). Next, we’ll build some logic to translate our detections into a meaningful number (Part 2).</p>
+
+<blockquote>
+  <p>I will not be going over installation of the required packages. This bit of information is highly variable across systems and is best left to the reader to take care of. However, I will include resources on the mainstream installation methods.</p>
+</blockquote>
+
+<p>Finally, we’ll be looking into deployment onto <a href="https://zeit.co/">ZEIT</a>, so that it may be accessed through the internet for anyone to test. (Part 2)</p>
+
+<h2 id="what-other-methods-exist">What other methods exist?</h2>
+<p>A license plate can be considered a block of text. Those of you familiar with OpenCV might realize that the library offers the <a href="https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/">EAST Text Detector</a> to localize a continous block of text. However, this merely identifies the location of the text, and not the contents of the text itself.</p>
+
+<p>For the actual character recognition, you make take advantage of an OCR algorithm called <a href="https://pypi.org/project/pytesseract/">pytesseract</a>. Passing the localized region of text obtained from our text detection algorithm to our OCR algorithm.</p>
+
+<h3 id="why-deep-learning-then">Why Deep Learning then?</h3>
+
+<p>Two reasons.</p>
+
+<p>The EAST Text Detector is excellent at localizing text on billboards, signs, and hand writing. However, it struggles to generate an accurate bounding box around the license plate itself. Passing this potentially incorrect bounding box to our Object Detection model as a preprocessing measure can reduce accuracy. Hence we avoid this step.</p>
+
+<p>Pytesseract, while useful for variety of character recognition situations, does not do well on license plates as it has not been trained on those types of images. While there <a href="https://tesseract-ocr.github.io/tessdoc/Training-Tesseract.html">exists a method to train it on your own dataset</a>, learning how to build your own object detector for any general application is an essential skill.</p>
+
+<h2 id="preparing-the-training-data">Preparing the Training Data</h2>
+
+<p>There are 36 different classes (26 alphabets and 10 numbers) that the model will need to classify and localize. For each observation/character we need the following information.</p>
+
+<ul>
+  <li>Name of the image containing the character.</li>
+  <li>Width of the image.</li>
+  <li>Height of the image.</li>
+  <li>Class of the annotation.</li>
+  <li>The (x,y) coordinate of the left-top corner of the annotated bounding box</li>
+  <li>The (x,y) coordinate of the right-bottom corner of the annotated bounding box</li>
+</ul>
+
+<p>The final csv file will look something like this:</p>
+
+<p><img src="/assets/Screenshot_CSV.png" alt="Sample_CSV" /></p>
+
+<p>As for our file structure, all the images (both training and testing images) will be kept in a single folder.</p>
+
+<p>Let us split our training data into <strong>train</strong>, <strong>test</strong> and <strong>validation</strong> sets. We will be using sklearn’s train_test_split function. We will be doing a 70-15-15 split.</p>
+
+<p>Below is the code to split our data:</p>
+
+<figure class="highlight"><pre><code class="language-py" data-lang="py"><span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">RandomState</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">'FINAL.csv'</span><span class="p">)</span>
+
+<span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span> <span class="c1">#Divide the original csv file into 70-30.
+</span><span class="n">train</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'Train.csv'</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="c1">#Create training csv file from train dataframe.
+</span><span class="n">test</span><span class="p">,</span><span class="n">validation</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span> <span class="c1">#Divide the test dataframe into test and validation dataframes with a 50-50 split.
+</span><span class="n">test</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'Test.csv'</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="c1">#Create test csv file from test dataframe.
+</span><span class="n">validation</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'Validation.csv'</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span> <span class="c1">#Create validation csv file from validation dataframe.</span></code></pre></figure>
+
+<p>We will be using the <a href="https://github.com/tensorflow/models/tree/master/research/object_detection">Tensorflow Object Detection API</a> to train our model. The installation instructions are <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md">here</a>.</p>
+
+<p><img src="/assets/Process_Flow.png" alt="Flow_Process" />
+The above image illustrates the process to input our training data into the model.</p>
+
+<p>The API requires that we convert our CSV files into TFRecord files for the training process. The code to do so is given <a href="">here</a>. Running the script:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">(</span>cv<span class="o">)</span> martianspeaks@KS-MSI:~/tensorflow-master/models-master/research<span class="nv">$ </span>python object_detection/generate_tfrecord.py <span class="nt">--csv_input</span><span class="o">=</span><span class="s1">'/home/martianspeaks/Study/FINAL_Train.csv'</span> <span class="nt">--output_path</span><span class="o">=</span><span class="s1">'/home/martianspeaks/Study/FINAL_Train.record'</span>
+
+<span class="o">(</span>cv<span class="o">)</span> martianspeaks@KS-MSI:~/tensorflow-master/models-master/research<span class="nv">$ </span>python object_detection/generate_tfrecord.py <span class="nt">--csv_input</span><span class="o">=</span><span class="s1">'/home/martianspeaks/Study/FINAL_Test.csv'</span> <span class="nt">--output_path</span><span class="o">=</span><span class="s1">'/home/martianspeaks/Study/FINAL_Test.record'</span></code></pre></figure>
+
+<h2 id="choosing-a-model">Choosing a Model</h2>
+<p>Analysing our training data, we see that there are numerous classes that have to be accurately detected. As each detection is crucial to ensure that the license plate is recognized correctly, model accuracy has to be relatively high compared to other object detection tasks. Hence for the purposes of our task, we will be retraining the popular <a href="https://arxiv.org/pdf/1506.01497.pdf">Faster R-CNN</a>.</p>
+
+<h3 id="creating-the-label-map">Creating the Label Map</h3>
+
+<p>The label map will encode our class as integers which will be used in the training process. Given below is an example of a label map:</p>
+
+<figure class="highlight"><pre><code class="language-py" data-lang="py"><span class="n">item</span> <span class="p">{</span>
+  <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">name</span><span class="p">:</span> <span class="s">'class_1'</span>
+<span class="p">}</span>
+<span class="n">item</span> <span class="p">{</span>
+  <span class="nb">id</span><span class="p">:</span> <span class="mi">2</span>
+  <span class="n">name</span><span class="p">:</span> <span class="s">'class_2'</span>  
+<span class="p">}</span></code></pre></figure>
+
+<p>Edit the label map to reflect our 36 classes and save it as <strong>object_detection.pbtxt</strong></p>
+
+<h3 id="setting-up-model-parameters">Setting up Model Parameters</h3>
+
+<ul>
+  <li>
+    <p><a href="http://download.tensorflow.org/models/object_detection/faster_rcnn_resnet50_coco_2018_01_28.tar.gz">Download</a> the pretrained model file from the <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md">model zoo</a>.</p>
+  </li>
+  <li>
+    <p><a href="https://github.com/tensorflow/models/blob/master/research/object_detection/samples/configs/faster_rcnn_resnet50_pets.config">Download</a> the config file that specifies our training parameters. For the list of all the corresponding config files, click <a href="https://github.com/tensorflow/models/tree/master/research/object_detection/samples/configs">here</a>.</p>
+  </li>
+</ul>
+
+<p>Next, we edit the config file and make the following changes:</p>
+
+<ol>
+  <li>Specify the path to the downloaded pretrained model in the <strong>fine_tune_checkpoint</strong> field.</li>
+  <li>Specify the path to the <strong>train.record</strong> file in the <strong>train_input_reader</strong> field</li>
+  <li>Specify the path to the <strong>label_map (object_detection.pbtxt)</strong> in the <strong>label_map</strong> field.</li>
+  <li>Specify the path to the <strong>test.record</strong> file in the <strong>eval_input_reader</strong> field.</li>
+  <li>Edit the <strong>num_steps</strong> field and specify the required number of steps. We will be experimenting with this value until we obtain an optimal model.</li>
+</ol>
+
+<p><em>Search for “PATH_TO_BE_CONFIGURED” to find the fields that should be configured.</em></p>
+
+<h2 id="training">Training</h2>
+
+<p>Taking a look at what we’ve done so far:</p>
+<ul>
+  <li>Generate TFRecord files for both train.csv and test.csv files</li>
+  <li>Create a label map for our dataset</li>
+  <li>Change the config files to reflect the required paths</li>
+</ul>
+
+<p>We are now finally ready to begin training our model! Let’s go ahead and move to the required folder.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">(</span>cv<span class="o">)</span> martianspeaks@KS-MSI:~<span class="nv">$ </span><span class="nb">cd </span>tensorflow-master/models-master/research</code></pre></figure>
+
+<p>Exporting the PYTHONPATH so that our training files can find the included libraries:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">(</span>cv<span class="o">)</span> martianspeaks@KS-MSI:~/tensorflow-master/models-master/research<span class="nv">$ </span><span class="nb">export </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:<span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>/slim</code></pre></figure>
+
+<p><strong>Running the training script:</strong></p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">(</span>cv<span class="o">)</span> martianspeaks@KS-MSI:~/tensorflow-master/models-master/research<span class="nv">$ </span>python object_detection/model_main.py <span class="nt">--logtostderr</span> <span class="nt">--model_dir</span><span class="o">=</span><span class="s1">'/home/martianspeaks/Study/'</span> <span class="nt">--pipeline_config_path</span><span class="o">=</span><span class="s1">'/home/martianspeaks/Study/Research/FasterRCNN_InceptionV2/faster_rcnn_inception_v2_coco_2018_01_28/faster_rcnn_inception_v2_coco.config'</span> <span class="nt">--num_train_steps</span><span class="o">=</span>20000 <span class="nt">--num_eval_steps</span><span class="o">=</span>50</code></pre></figure>
+
+<p>Explanation of the command parameters:</p>
+
+<ul>
+  <li>logtostderr - Path to where the logs are displayed. Leaving this parameter blank indicated that the logs will be displayed onto STDOUT.</li>
+  <li>model_dir - Path to where all the checkpoints will be saved.</li>
+  <li>pipeline_config_path - Path to the config file.</li>
+</ul>
+
+<p>If you’ve done everything perfectly up till this point, then you should start seeing the step number and the corresponding loss value. If not, try the following:</p>
+
+<ol>
+  <li>Double check the paths in your config file.</li>
+  <li>Export the PYTHONPATH in the appropriate folder as mentioned above. You should be in the ‘research’ folder when doing so.</li>
+  <li>Check to make sure your label map is created properly.</li>
+  <li>Reduce your batch_size to 1 in the config file.</li>
+</ol>
+
+<h3 id="monitoring-the-training">Monitoring the Training</h3>
+<p>The advantage of using the Tensorflow Object Detection API, is that we have access to Tensorboard. A useful tool for evaluating and monitoring all sorts of useful metrics and information.</p>
+
+<p>Run the following command in another terminal window and click the link generated:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">(</span>cv<span class="o">)</span> martianspeaks@KS-MSI:~<span class="nv">$ </span>tensorboard <span class="nt">--logdir</span><span class="o">=</span><span class="s1">'/home/martianspeaks/Study/'</span></code></pre></figure>
+
+<p>Where <strong>logdir</strong> is the path where all the checkpoints are being saved. You may run this <strong>during</strong> or <strong>after</strong> training.</p>
+
+<p>Two useful tabs are the SCALARS and IMAGES tab. The SCALARS tab consists of useful graphs such as:</p>
+<ul>
+  <li>mAP</li>
+  <li>AR</li>
+  <li>Various losses.</li>
+</ul>
+
+<p>Under the IMAGES tab, you can move the slider to visualize the model performance at various steps in the training process.</p>
+
+<p>Here’s what it looks like at 3 different steps:</p>
+
+<p><img src="/assets/Step_1.png" alt="Step_1" /></p>
+
+<p><img src="/assets/Step_2.png" alt="Step_2" /></p>
+
+<p><img src="/assets/Step_3.png" alt="Step_3" /></p>
+
+<p>We can clearly see the impact of larger steps in model performance.</p>
+
+<h2 id="inference">Inference</h2>
+
+<p>Once training is done, it’s time to visualize the fruits of our training! However, before we can plug in the model into our driver program, we need to convert our saved <strong>checkpoint</strong> into a <strong>protobuf</strong> model file. Running the following command to do so:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">(</span>cv<span class="o">)</span> martianspeaks@KS-MSI:~/tensorflow-master/models-master/research<span class="nv">$ </span>python object_detection/export_inference_graph.py <span class="nt">--input_type</span> image_tensor <span class="nt">--pipeline_config_path</span><span class="o">=</span><span class="s1">'/home/martianspeaks/Study/Research/FasterRCNN_InceptionV2/faster_rcnn_inception_v2_coco_2018_01_28/faster_rcnn_inception_v2_coco.config'</span> <span class="nt">--trained_checkpoint_prefix</span><span class="o">=</span><span class="s1">'/home/martianspeaks/Study/model.ckpt-14763'</span> <span class="nt">--output_directory</span><span class="o">=</span><span class="s1">'/home/martianspeaks/Study/'</span></code></pre></figure>
+
+<p>Your saved model will be called <strong>frozen_inference_graph.pb</strong> and will be saved in the path specified by the <strong>output_directory</strong> parameter in the command above.</p>
+
+<p>Run the following driver program to generate detections on your own image. Make sure it’s from your validation set to get a more accurate understanding of model performance!</p>
+
+<figure class="highlight"><pre><code class="language-py" data-lang="py"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
+<span class="kn">import</span> <span class="nn">cv2</span> <span class="k">as</span> <span class="n">cv</span>
+
+<span class="n">x1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">26</span><span class="p">,</span><span class="mi">27</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">29</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">31</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">34</span><span class="p">,</span><span class="mi">35</span><span class="p">,</span><span class="mi">36</span><span class="p">)</span>
+<span class="n">x2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="s">'A'</span><span class="p">,</span><span class="s">'B'</span><span class="p">,</span><span class="s">'C'</span><span class="p">,</span><span class="s">'D'</span><span class="p">,</span><span class="s">'E'</span><span class="p">,</span><span class="s">'F'</span><span class="p">,</span><span class="s">'G'</span><span class="p">,</span><span class="s">'H'</span><span class="p">,</span><span class="s">'I'</span><span class="p">,</span><span class="s">'J'</span><span class="p">,</span><span class="s">'K'</span><span class="p">,</span><span class="s">'L'</span><span class="p">,</span><span class="s">'M'</span><span class="p">,</span><span class="s">'N'</span><span class="p">,</span><span class="s">'O'</span><span class="p">,</span><span class="s">'P'</span><span class="p">,</span><span class="s">'Q'</span><span class="p">,</span><span class="s">'R'</span><span class="p">,</span><span class="s">'S'</span><span class="p">,</span><span class="s">'T'</span><span class="p">,</span><span class="s">'U'</span><span class="p">,</span><span class="s">'V'</span><span class="p">,</span><span class="s">'W'</span><span class="p">,</span><span class="s">'X'</span><span class="p">,</span><span class="s">'Y'</span><span class="p">,</span><span class="s">'Z'</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+    <span class="nb">dict</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">B</span>
+<span class="n">font</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">FONT_HERSHEY_SIMPLEX</span>
+<span class="c1"># Read the graph.
+</span><span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">gfile</span><span class="o">.</span><span class="n">FastGFile</span><span class="p">(</span><span class="s">'frozen_inference_graph.pb'</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">graph_def</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">GraphDef</span><span class="p">()</span>
+    <span class="n">graph_def</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+    <span class="c1"># Restore session
+</span>    <span class="n">sess</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">as_default</span><span class="p">()</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">import_graph_def</span><span class="p">(</span><span class="n">graph_def</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">''</span><span class="p">)</span>
+
+    <span class="c1"># Read and preprocess an image.
+</span>    <span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s">'/home/martianspeaks/Study/datasets/kaggle/images/Arizona.jpg'</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1">#inp = cv.resize(img, (300, 300))
+</span>    <span class="n">inp</span> <span class="o">=</span> <span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>  <span class="c1"># BGR2RGB
+</span>
+    <span class="c1"># Run the model
+</span>    <span class="n">out</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">sess</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_tensor_by_name</span><span class="p">(</span><span class="s">'num_detections:0'</span><span class="p">),</span>
+                    <span class="n">sess</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_tensor_by_name</span><span class="p">(</span><span class="s">'detection_scores:0'</span><span class="p">),</span>
+                    <span class="n">sess</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_tensor_by_name</span><span class="p">(</span><span class="s">'detection_boxes:0'</span><span class="p">),</span>
+                    <span class="n">sess</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_tensor_by_name</span><span class="p">(</span><span class="s">'detection_classes:0'</span><span class="p">)],</span>
+                   <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="s">'image_tensor:0'</span><span class="p">:</span> <span class="n">inp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">inp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">inp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">3</span><span class="p">)})</span>
+
+    <span class="c1"># Visualize detected bounding boxes.
+</span>    <span class="n">num_detections</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_detections</span><span class="p">):</span>
+        <span class="n">classId</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">bbox</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">out</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span>
+
+        <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="mf">0.8</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">cols</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">rows</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">cols</span>
+            <span class="n">bottom</span> <span class="o">=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">rows</span>
+            <span class="n">cv</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">right</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">bottom</span><span class="p">)),</span> <span class="p">(</span><span class="mi">125</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">51</span><span class="p">),</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">cv</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="n">classId</span><span class="p">]),</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span><span class="p">),</span> <span class="n">font</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">LINE_AA</span><span class="p">)</span>
+            <span class="k">print</span> <span class="p">(</span><span class="n">classId</span><span class="p">)</span>
+            <span class="k">print</span> <span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+
+<span class="n">cv</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s">'TensorFlow MobileNet-SSD'</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span></code></pre></figure>
+
+<h3 id="results">Results:</h3>
+
+<p>Some perfect detections:</p>
+
+<p><img src="/assets/Test_1.png" alt="Test_1.png" /></p>
+
+<p><img src="/assets/Test_3.png" alt="Test_3.png" /></p>
+
+<p>Some not so perfect detections:</p>
+
+<p><img src="/assets/Test_2.png" alt="Test_2.png" /></p>
+
+<p><img src="/assets/Test_4.png" alt="Test_4.png" /></p>
+
+<p>The model is by no means perfect yet. But it’s performance has already exceeded what current OCR algorithms are capable of!</p>
+
+<h2 id="improvements">Improvements</h2>
+
+<p>What can we possibly do to improve model performance?</p>
+
+<ol>
+  <li>Increase training data samples</li>
+  <li>Choose a more complex model</li>
+  <li>Visit data augmentation options</li>
+</ol>
+
+<p>Next week, we’ll be looking more in-depth into training parameters to boost model performance. We’ll also look into how you can plug in other pretrained models available to us.</p>
+:ET

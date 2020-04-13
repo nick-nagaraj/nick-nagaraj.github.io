@@ -8,7 +8,7 @@ Today, we'll be looking at how to train your own object detection model that wil
 
 > I will not be going over installation of the required packages. This bit of information is highly variable across systems and is best left to the reader to take care of. However, I will include resources on the mainstream installation methods.
 
- Finally, we'll be looking into deployment onto [ZEIT](https://zeit.co/), so that it may be accessed through the internet for anyone to test. (Part 2)
+ Finally, we'll be looking into deployment onto [Render](https://render.com/), so that it may be accessed through the internet for anyone to test. (Part 2)
 
 ## What other methods exist?
 A license plate can be considered a block of text. Those of you familiar with OpenCV might realize that the library offers the [EAST Text Detector](https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/) to localize a continous block of text. However, this merely identifies the location of the text, and not the contents of the text itself.

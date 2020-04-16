@@ -1,0 +1,36 @@
+I"�<p>Last week we looked into the basic functionality of the TensorFlow Object Detection API. We ran our object detection model to transcribe license plates. This week, we’ll look into some of the options available to us during the training process. Next, we’ll build some OpenCV logic to order the detections, creating a meaningful number. Finally, deployment will be the name of the game.</p>
+
+<h2 id="ordering-our-detections">Ordering our detections</h2>
+<p>If you ran the driver program from last week, you’ll notice that the detections are ordered by the confidence of each bounding box. While this is useful for understanding which letters our model is most accurate on, it does not reflect the order of the characters present on the license plate. So, how do we fix this?</p>
+
+<p>Let’s take a look at one of our license plates.</p>
+
+<p><img src="/assets/NewYork.jpg" alt="Sample_2" /></p>
+
+<p>We have access to the (x,y) coordinates of each bounding box. Thus, we sort the detections in ascending order of x-coordinates. This becomes our license plate number! Making some modifications to our driver code, and running it.</p>
+
+<p><img src="/assets/FINAL_Detection.png" alt="Final_Detection" /></p>
+
+<p>Looks good!</p>
+
+<h2 id="ordering-with-multiple-lines">Ordering with Multiple Lines</h2>
+<p>I wish it were that simple. Sure, the code works for the above license plate. But it only works because all the characters present in the license plate are aligned along only one line. What happens if the content is divided along two lines?</p>
+
+<p><img src="/assets/Two_Line.jpeg" alt="Line_2" /></p>
+
+<p>This particular scenario is not common, but it does present an interesting edge case challenge to our ‘out of the box’ solution. The next bit is a bit technical in case you’d like to skip the details. It isn’t particularly important.</p>
+
+<p>Our first order of business is to detect how many lines of characters are present. License plates typically do not contain more than two lines. Thus our goal is to detect how many lines are present, and which line each character belongs to. Once we know which line each character belongs to, we sort the characters present on each line in ascending orders of their x-coordinates. Finally we concatenate the characters present on the first line with that of the second line.</p>
+
+<h3 id="which-character-is-on-which-line">Which Character is on Which Line?</h3>
+<p>Here’s what we know. Once we sort each detection by their y-coordinate, we can say for sure that the first element will be on the first line. We also know that the last element will be on the last line. Whether this ‘last line’ is the first line or the second line remains to be seen. So, we draw a horizontal line through the midpoint of the first element. Next, we draw a horizontal line through the midpoint of the last element. If the distance between the two horizontal lines is greater than a particular threshold, then we know that the first character on the license plate and the last character on the licence plate are seperated by a considerable gap. This means that the first and last character are on two seperate lines. If the distance between the two horizontal lines is lesser than a particular threshold, then odds are, it’s on a single line.</p>
+
+<p><img src="/assets/Lines_1.png" alt="Line_1" />
+<img src="/assets/Lines_2.png" alt="Line_2" /></p>
+
+<h3 id="sorting-each-line">Sorting Each Line</h3>
+<p>Whether there’s one line or two, once we know which line each character belongs to, we sort the line in ascending order of x-coordinates. Assuming there’s one, we now have the transcribed number plate! If there’s two, we sort the first line. Then, we sort the second line. Finally we append the sorted detections from the second line to the sorted detections from the first line. You can write your own script to automate this and output this information into a more useful format such as a CSV file.</p>
+
+<h2 id="options-during-training">Options during Training</h2>
+<p>Often the best increases in performance lies in your training data. As the number of classes is large, it becomes difficult to ensure that the model can accurately detect each character. Increasing the amount of training data is the first thing you should try.</p>
+:ET

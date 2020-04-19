@@ -23,6 +23,8 @@ The EAST Text Detector is excellent at localizing text on billboards, signs, and
 
 Pytesseract, while useful for variety of character recognition situations, does not do well on license plates as it has not been trained on those types of images. While there [exists a method to train it on your own dataset](https://tesseract-ocr.github.io/tessdoc/Training-Tesseract.html), learning how to build your own object detector for any general application is an essential skill.
 
+![Gif](/assets/EAST.gif)
+
 
 ## Preparing the Training Data
 
@@ -98,6 +100,11 @@ item {
 Edit the label map to reflect our 36 classes and save it as **object_detection.pbtxt**
 
 ### Setting up Model Parameters
+
+Different deployment scenarios call for different models. Models that need to be run on low end hardware devices such the Raspberry Pi or your smartphone might require a lightweight model such as MobileNet. Assuming we have the resources to do so, you may choose to run a RCNN or NasNet. Whatever the model is, there are two things we need to swap out our model and begin training.
+
+1. Pretrained weights
+2. Config file
 
 * [Download](http://download.tensorflow.org/models/object_detection/faster_rcnn_resnet50_coco_2018_01_28.tar.gz) the pretrained model file from the [model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md).
 
@@ -268,6 +275,9 @@ Some not so perfect detections:
 ![Test_4.png](/assets/Test_4.png)
 
 The model is by no means perfect yet. But it's performance has already exceeded what current OCR algorithms are capable of!
+
+
+
 
 ## Improvements
 

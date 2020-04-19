@@ -73,9 +73,3 @@ SSDRandomCropFixedAspectRatio ssd_random_crop_fixed_aspect_ratio = 23;
 {% endhighlight %}
 
 Edit the config file and replace the options as provided above.
-
-### Different Models
-Different deployment scenarios call for different models. Models that need to be run on low end hardware devices such the Raspberry Pi or your smartphone might require a lightweight model such as MobileNet. Assuming we have the resources to do so, you may choose to run a RCNN or NasNet. Whatever the model is, there are two things we need to swap out our model and begin training.
-
-1. Config file
-2. Pretrained weights

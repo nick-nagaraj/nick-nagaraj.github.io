@@ -4,7 +4,7 @@
  <title>Nikhil Nagaraj</title>
  <link href="http://localhost:4000/atom.xml" rel="self"/>
  <link href="http://localhost:4000/"/>
- <updated>2020-04-24T12:21:38+05:30</updated>
+ <updated>2020-04-24T12:39:05+05:30</updated>
  <id>http://localhost:4000</id>
  <author>
    <name>Nikhil Nagaraj</name>
@@ -102,7 +102,13 @@
 
 &lt;span class=&quot;n&quot;&gt;CMD&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;python3&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/tensorflow/models/research/object_detection/required_files/app/server.py&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;serve&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;For an explanation of the respective commands used, take a look at the Docker documentation.&lt;/p&gt;
+&lt;p&gt;Let’s go ahead and build and run the container.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;cv&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; martianspeaks@KS-MSI:~/tensorflow-master/licence-plate-docker&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;docker build &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; tensorflow &lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
+
+&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;cv&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; martianspeaks@KS-MSI:~/tensorflow-master/licence-plate-docker&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;docker run &lt;span class=&quot;nt&quot;&gt;--rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-it&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 5000:5000 tensorflow&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;For an explanation of the respective commands used, take a look at the Docker &lt;a href=&quot;https://docs.docker.com/develop/develop-images/dockerfile_best-practices/&quot;&gt;documentation&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Next, go ahead and create your own repository on GitHub. Upload the Dockerfile as well as the required files to the repo. Next, create an account on Render, and link the repo. Everything should be up and running! Given below is a screenshot of our page!&lt;/p&gt;
 
@@ -282,7 +288,7 @@ The above image illustrates the process to input our training data into the mode
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;cv&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; martianspeaks@KS-MSI:~/tensorflow-master/models-master/research&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PYTHONPATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$PYTHONPATH&lt;/span&gt;:&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;pwd&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;:&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;pwd&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;/slim&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;&lt;strong&gt;Running the training script:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Running the training script:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;cv&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; martianspeaks@KS-MSI:~/tensorflow-master/models-master/research&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;python object_detection/model_main.py &lt;span class=&quot;nt&quot;&gt;--logtostderr&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--model_dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'/home/martianspeaks/Study/'&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--pipeline_config_path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'/home/martianspeaks/Study/Research/FasterRCNN_InceptionV2/faster_rcnn_inception_v2_coco_2018_01_28/faster_rcnn_inception_v2_coco.config'&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--num_train_steps&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;20000 &lt;span class=&quot;nt&quot;&gt;--num_eval_steps&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;50&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 

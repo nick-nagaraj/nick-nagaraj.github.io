@@ -93,7 +93,16 @@ CMD ["python3", "/tensorflow/models/research/object_detection/required_files/app
 
 {% endhighlight %}
 
-For an explanation of the respective commands used, take a look at the Docker documentation.
+Let's go ahead and build and run the container.
+
+{% highlight bash %}
+(cv) martianspeaks@KS-MSI:~/tensorflow-master/licence-plate-docker$ sudo docker build -t tensorflow .
+
+(cv) martianspeaks@KS-MSI:~/tensorflow-master/licence-plate-docker$ sudo docker run --rm -it -p 5000:5000 tensorflow
+
+{% endhighlight %}
+
+For an explanation of the respective commands used, take a look at the Docker [documentation](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/).
 
 Next, go ahead and create your own repository on GitHub. Upload the Dockerfile as well as the required files to the repo. Next, create an account on Render, and link the repo. Everything should be up and running! Given below is a screenshot of our page!
 
@@ -101,4 +110,4 @@ Next, go ahead and create your own repository on GitHub. Upload the Dockerfile a
 
 ![Webpage](/assets/Webpage.png)
 
-Of course, I can't actually host the webpage at all times as the service costs $7 a month. I will explore [Heroku](https://www.heroku.com)'s free option at a later date. Note that we will probably have to switch to a lighter model such as SSD MobileNet as the service only allows for 512MB of RAM + ROM. 
+Of course, I can't actually host the webpage at all times as the service costs $7 a month. I will explore [Heroku](https://www.heroku.com)'s free option at a later date. Note that we will probably have to switch to a lighter model such as SSD MobileNet as the service only allows for 512MB of RAM + ROM.

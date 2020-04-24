@@ -142,7 +142,7 @@ Exporting the PYTHONPATH so that our training files can find the included librar
 (cv) martianspeaks@KS-MSI:~/tensorflow-master/models-master/research$ export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
 {% endhighlight %}
 
-**Running the training script:**
+Running the training script:
 {% highlight bash %}
 (cv) martianspeaks@KS-MSI:~/tensorflow-master/models-master/research$ python object_detection/model_main.py --logtostderr --model_dir='/home/martianspeaks/Study/' --pipeline_config_path='/home/martianspeaks/Study/Research/FasterRCNN_InceptionV2/faster_rcnn_inception_v2_coco_2018_01_28/faster_rcnn_inception_v2_coco.config' --num_train_steps=20000 --num_eval_steps=50
 {% endhighlight %}

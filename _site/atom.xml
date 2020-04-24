@@ -4,7 +4,7 @@
  <title>Nikhil Nagaraj</title>
  <link href="http://localhost:4000/atom.xml" rel="self"/>
  <link href="http://localhost:4000/"/>
- <updated>2020-04-16T21:12:04+05:30</updated>
+ <updated>2020-04-20T01:49:23+05:30</updated>
  <id>http://localhost:4000</id>
  <author>
    <name>Nikhil Nagaraj</name>
@@ -20,67 +20,41 @@
    <content type="html">&lt;p&gt;Last week we looked into the basic functionality of the TensorFlow Object Detection API. We ran our object detection model to transcribe license plates. This week, we’ll look into some of the options available to us during the training process. Next, we’ll build some OpenCV logic to order the detections, creating a meaningful number. Finally, deployment will be the name of the game.&lt;/p&gt;
 
 &lt;h2 id=&quot;ordering-our-detections&quot;&gt;Ordering our detections&lt;/h2&gt;
-&lt;p&gt;If you ran the driver program from last week, you’ll notice that the detections are ordered by the confidence of each bounding box. While this is useful for understanding which letters our model is most accurate on, it does not reflect the order of the characters present on the license plate. So, how do we fix this?&lt;/p&gt;
+&lt;p&gt;If you run the driver program from last week, you’ll notice that the detections are ordered by the confidence of each bounding box. While this is useful for understanding which letters our model is most accurate on, it does not reflect the order of the characters present on the license plate. So, how do we fix this?&lt;/p&gt;
 
 &lt;p&gt;Let’s take a look at one of our license plates.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/NewYork.jpg&quot; alt=&quot;Sample_2&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;We have access to the (x,y) coordinates of each bounding box. Thus, we sort the detections in ascending order of x-coordinates. This becomes our license plate number! Making some modifications to our driver code, and running it.&lt;/p&gt;
+&lt;p&gt;We have access to the (x,y) coordinates of each bounding box. Thus, we sort the detections in the ascending order of x-coordinates. This becomes our license plate number! Making some modifications to our driver code, and running it.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/FINAL_Detection.png&quot; alt=&quot;Final_Detection&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Looks good!&lt;/p&gt;
 
 &lt;h2 id=&quot;ordering-with-multiple-lines&quot;&gt;Ordering with Multiple Lines&lt;/h2&gt;
-&lt;p&gt;I wish it were that simple. Sure, the code works for the above license plate. But it only works because all the characters present in the license plate are aligned along only one line. What happens if the content is divided along two lines?&lt;/p&gt;
+&lt;p&gt;I wish it were that simple. Sure, the code works for the above license plate. But it only works because all the characters present in the license plate are aligned along only one line. What happens if the content is divided into two lines?&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/Two_Line.jpeg&quot; alt=&quot;Line_2&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;This particular scenario is not common, but it does present an interesting edge case challenge to our ‘out of the box’ solution. The next bit is a bit technical in case you’d like to skip the details. It isn’t particularly important.&lt;/p&gt;
 
-&lt;p&gt;Our first order of business is to detect how many lines of characters are present. License plates typically do not contain more than two lines. Thus our goal is to detect how many lines are present, and which line each character belongs to. Once we know which line each character belongs to, we sort the characters present on each line in ascending orders of their x-coordinates. Finally we concatenate the characters present on the first line with that of the second line.&lt;/p&gt;
+&lt;p&gt;Our first order of business is to detect how many lines of characters are present. License plates typically do not contain more than two lines. Thus our goal is to detect how many lines are present, and which line each character belongs to. Once we know which line each character belongs to, we sort the characters present on each line in ascending orders of their x-coordinates. Finally, we concatenate the characters present on the first line with that of the second line.&lt;/p&gt;
 
 &lt;h3 id=&quot;which-character-is-on-which-line&quot;&gt;Which Character is on Which Line?&lt;/h3&gt;
-&lt;p&gt;Here’s what we know. Once we sort each detection by their y-coordinate, we can say for sure that the first element will be on the first line. We also know that the last element will be on the last line. Whether this ‘last line’ is the first line or the second line remains to be seen. So, we draw a horizontal line through the midpoint of the first element. Next, we draw a horizontal line through the midpoint of the last element. If the distance between the two horizontal lines is greater than a particular threshold, then we know that the first character on the license plate and the last character on the licence plate are seperated by a considerable gap. This means that the first and last character are on two seperate lines. If the distance between the two horizontal lines is lesser than a particular threshold, then odds are, it’s on a single line.&lt;/p&gt;
+&lt;p&gt;Here’s what we know. Once we sort each detection by their y-coordinate, we can say for sure that the first element will be on the first line. We also know that the last element will be on the last line. Whether this ‘last line’ is the first line or the second line remains to be seen. So, we draw a horizontal line through the midpoint of the first element. Next, we draw a horizontal line through the midpoint of the last element. If the distance between the two horizontal lines is greater than a particular threshold, then we know that the first character on the license plate and the last character on the license plate are separated by a considerable gap. This means that the first and last character is on two separate lines. If the distance between the two horizontal lines is lesser than a particular threshold, then odds are, it’s on a single line.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/Lines_1.png&quot; alt=&quot;Line_1&quot; /&gt;
 &lt;img src=&quot;/assets/Lines_2.png&quot; alt=&quot;Line_2&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;sorting-each-line&quot;&gt;Sorting Each Line&lt;/h3&gt;
-&lt;p&gt;Whether there’s one line or two, once we know which line each character belongs to, we sort the line in ascending order of x-coordinates. Assuming there’s one, we now have the transcribed number plate! If there’s two, we sort the first line. Then, we sort the second line. Finally we append the sorted detections from the second line to the sorted detections from the first line. You can write your own script to automate this and output this information into a more useful format such as a CSV file.&lt;/p&gt;
+&lt;p&gt;Whether there’s one line or two, once we know which line each character belongs to, we sort the line in ascending order of x-coordinates. Assuming there’s one, we now have the transcribed number plate! If there’s two, we sort the first line. Then, we sort the second line. Finally, we append the sorted detections from the second line to the sorted detections from the first line. You can write your own script to automate this and output this information into a more useful format such as a CSV file. Given &lt;a href=&quot;/&quot;&gt;here&lt;/a&gt; (Yet to be uploaded) is the modified driver program.&lt;/p&gt;
 
-&lt;h2 id=&quot;options-during-training&quot;&gt;Options during Training&lt;/h2&gt;
-&lt;p&gt;Often the best increases in performance lies in your training data. As the number of classes is large, it becomes difficult to ensure that the model can accurately detect each character. Increasing the amount of training data is the first thing you should try.&lt;/p&gt;
+&lt;h2 id=&quot;deployment&quot;&gt;Deployment&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://render.com/&quot;&gt;Render&lt;/a&gt; is a brilliant service that allows you to host your containerized applications on the cloud, allowing executable access to anyone to access your project! By the end of this, we’ll be able to upload an image, and view the license plate number on the website.So how do we package our application so that all our dependencies are available? The answer, is that we create a isolated environment for our application so that it can run independently on any system or service. &lt;a href=&quot;https://docs.docker.com/get-started/&quot;&gt;Docker&lt;/a&gt; is the magic word. Docker allows us to neatly package our code into a container, which can later be run through a Render web service.&lt;/p&gt;
 
-&lt;h3 id=&quot;data-augmentation&quot;&gt;Data Augmentation&lt;/h3&gt;
-&lt;p&gt;The Tensorflow Object Detection API allows the user to customize data augmentation options according to need. Here’s a list of all the options you can try.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-py&quot; data-lang=&quot;py&quot;&gt;&lt;span class=&quot;n&quot;&gt;NormalizeImage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;normalize_image&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomHorizontalFlip&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_horizontal_flip&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomPixelValueScale&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_pixel_value_scale&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomImageScale&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_image_scale&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomRGBtoGray&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_rgb_to_gray&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomAdjustBrightness&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_adjust_brightness&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomAdjustContrast&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_adjust_contrast&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomAdjustHue&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_adjust_hue&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomAdjustSaturation&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_adjust_saturation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomDistortColor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_distort_color&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomJitterBoxes&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_jitter_boxes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomCropImage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_crop_image&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomPadImage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_pad_image&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;13&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomCropPadImage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_crop_pad_image&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomCropToAspectRatio&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_crop_to_aspect_ratio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomBlackPatches&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_black_patches&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;RandomResizeMethod&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_resize_method&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;17&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;ScaleBoxesToPixelCoordinates&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scale_boxes_to_pixel_coordinates&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;ResizeImage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resize_image&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;19&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;SubtractChannelMean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;subtract_channel_mean&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;SSDRandomCrop&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ssd_random_crop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;21&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;SSDRandomCropPad&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ssd_random_crop_pad&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;22&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;SSDRandomCropFixedAspectRatio&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ssd_random_crop_fixed_aspect_ratio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;23&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Edit the config file and replace the options as provided above.&lt;/p&gt;
+&lt;h3 id=&quot;containerization&quot;&gt;Containerization&lt;/h3&gt;
+&lt;p&gt;Let’s go ahead and setup Docker on our system. Installation instructions are provided &lt;a href=&quot;/https://docs.docker.com/engine/install/ubuntu/&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
 </content>
  </entry>
  
@@ -89,7 +63,8 @@
    <link href="http://localhost:4000/about/"/>
    <updated>2020-04-08T00:00:00+05:30</updated>
    <id>http://localhost:4000/introducing-lanyon</id>
-   <content type="html">&lt;p&gt;Hi! My name is Nikhil. I am an undergrad at Manipal Institute of Technology studying Mechatronics. I am interested in Deep Learning with a specialization in Computer Vision and Data Analytics.&lt;/p&gt;
+   <content type="html">&lt;p&gt;&lt;img src=&quot;/assets/My.png&quot; alt=&quot;image&quot; /&gt;
+Hi! My name is Nikhil. I am an undergrad at Manipal Institute of Technology studying Mechatronics. I am interested in Deep Learning with a specialization in Computer Vision and Data Analytics.&lt;/p&gt;
 
 &lt;h3 id=&quot;what-is-this-for&quot;&gt;What is this for?&lt;/h3&gt;
 
@@ -115,16 +90,16 @@
    <link href="http://localhost:4000/objdetect-1"/>
    <updated>2020-04-07T00:00:00+05:30</updated>
    <id>http://localhost:4000/example-content</id>
-   <content type="html">&lt;p&gt;Today, we’ll be looking at how to train your own object detection model that will learn to detect characters on a license plate (Part 1). Next, we’ll build some logic to translate our detections into a meaningful number (Part 2).&lt;/p&gt;
+   <content type="html">&lt;p&gt;Today, we’ll be taking a look at training your own object detection model that will learn to detect characters on a license plate (Part 1). Next, we’ll build some logic to translate our detections into a meaningful number (Part 2).&lt;/p&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;I will not be going over installation of the required packages. This bit of information is highly variable across systems and is best left to the reader to take care of. However, I will include resources on the mainstream installation methods.&lt;/p&gt;
+  &lt;p&gt;I will not be going over the installation of the required packages. This bit of information is highly variable across systems and is best left to the reader to take care of. However, I will include resources on the mainstream installation methods.&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;Finally, we’ll be looking into deployment onto &lt;a href=&quot;https://render.com/&quot;&gt;Render&lt;/a&gt;, so that it may be accessed through the internet for anyone to test. (Part 2)&lt;/p&gt;
 
 &lt;h2 id=&quot;what-other-methods-exist&quot;&gt;What other methods exist?&lt;/h2&gt;
-&lt;p&gt;A license plate can be considered a block of text. Those of you familiar with OpenCV might realize that the library offers the &lt;a href=&quot;https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/&quot;&gt;EAST Text Detector&lt;/a&gt; to localize a continous block of text. However, this merely identifies the location of the text, and not the contents of the text itself.&lt;/p&gt;
+&lt;p&gt;A license plate can be considered a block of text. Those of you familiar with OpenCV might realize that the library offers the &lt;a href=&quot;https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/&quot;&gt;EAST Text Detector&lt;/a&gt; to localize a continuous block of text. However, this merely identifies the location of the text and not the contents of the text itself.&lt;/p&gt;
 
 &lt;p&gt;For the actual character recognition, you make take advantage of an OCR algorithm called &lt;a href=&quot;https://pypi.org/project/pytesseract/&quot;&gt;pytesseract&lt;/a&gt;. Passing the localized region of text obtained from our text detection algorithm to our OCR algorithm.&lt;/p&gt;
 
@@ -132,9 +107,11 @@
 
 &lt;p&gt;Two reasons.&lt;/p&gt;
 
-&lt;p&gt;The EAST Text Detector is excellent at localizing text on billboards, signs, and hand writing. However, it struggles to generate an accurate bounding box around the license plate itself. Passing this potentially incorrect bounding box to our Object Detection model as a preprocessing measure can reduce accuracy. Hence we avoid this step.&lt;/p&gt;
+&lt;p&gt;The EAST Text Detector is excellent at localizing text on billboards, signs, and handwriting. However, it struggles to generate an accurate bounding box around the license plate itself. Passing this potentially incorrect bounding box to our Object Detection model as a preprocessing measure can reduce accuracy. Hence we avoid this step.&lt;/p&gt;
 
-&lt;p&gt;Pytesseract, while useful for variety of character recognition situations, does not do well on license plates as it has not been trained on those types of images. While there &lt;a href=&quot;https://tesseract-ocr.github.io/tessdoc/Training-Tesseract.html&quot;&gt;exists a method to train it on your own dataset&lt;/a&gt;, learning how to build your own object detector for any general application is an essential skill.&lt;/p&gt;
+&lt;p&gt;Pytesseract, while useful for a variety of character recognition situations, does not do well on license plates as it has not been trained on those types of images. While there &lt;a href=&quot;https://tesseract-ocr.github.io/tessdoc/Training-Tesseract.html&quot;&gt;exists a method to train it on your own dataset&lt;/a&gt;, learning how to build your own object detector for any general application is an essential skill.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/EAST.gif&quot; alt=&quot;Gif&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;preparing-the-training-data&quot;&gt;Preparing the Training Data&lt;/h2&gt;
 
@@ -149,7 +126,7 @@
   &lt;li&gt;The (x,y) coordinate of the right-bottom corner of the annotated bounding box&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;The final csv file will look something like this:&lt;/p&gt;
+&lt;p&gt;The final CSV file will look something like this:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/Screenshot_CSV.png&quot; alt=&quot;Sample_CSV&quot; /&gt;&lt;/p&gt;
 
@@ -183,7 +160,7 @@ The above image illustrates the process to input our training data into the mode
 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;cv&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; martianspeaks@KS-MSI:~/tensorflow-master/models-master/research&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;python object_detection/generate_tfrecord.py &lt;span class=&quot;nt&quot;&gt;--csv_input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'/home/martianspeaks/Study/FINAL_Test.csv'&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--output_path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'/home/martianspeaks/Study/FINAL_Test.record'&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;h2 id=&quot;choosing-a-model&quot;&gt;Choosing a Model&lt;/h2&gt;
-&lt;p&gt;Analysing our training data, we see that there are numerous classes that have to be accurately detected. As each detection is crucial to ensure that the license plate is recognized correctly, model accuracy has to be relatively high compared to other object detection tasks. Hence for the purposes of our task, we will be retraining the popular &lt;a href=&quot;https://arxiv.org/pdf/1506.01497.pdf&quot;&gt;Faster R-CNN&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Analyzing our training data, we see that numerous classes have to be accurately detected. As each detection is crucial to ensure that the license plate is recognized correctly, model accuracy has to be relatively high compared to other object detection tasks. Hence for the purposes of our task, we will be retraining the popular &lt;a href=&quot;https://arxiv.org/pdf/1506.01497.pdf&quot;&gt;Faster R-CNN&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h3 id=&quot;creating-the-label-map&quot;&gt;Creating the Label Map&lt;/h3&gt;
 
@@ -202,7 +179,7 @@ The above image illustrates the process to input our training data into the mode
 
 &lt;h3 id=&quot;setting-up-model-parameters&quot;&gt;Setting up Model Parameters&lt;/h3&gt;
 
-&lt;p&gt;Different deployment scenarios call for different models. Models that need to be run on low end hardware devices such the Raspberry Pi or your smartphone might require a lightweight model such as MobileNet. Assuming we have the resources to do so, you may choose to run a RCNN or NasNet. Whatever the model is, there are two things we need to swap out our model and begin training.&lt;/p&gt;
+&lt;p&gt;Different deployment scenarios call for different models. Models that need to be run on low-end hardware devices such as the Raspberry Pi or your smartphone might require a lightweight model such as MobileNet. Assuming we have the resources to do so, you may choose to run an RCNN or NasNet. Whatever the model is, there are two things we need to swap out our model and begin training.&lt;/p&gt;
 
 &lt;ol&gt;
   &lt;li&gt;Pretrained weights&lt;/li&gt;
@@ -259,10 +236,10 @@ The above image illustrates the process to input our training data into the mode
   &lt;li&gt;pipeline_config_path - Path to the config file.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;If you’ve done everything perfectly up till this point, then you should start seeing the step number and the corresponding loss value. If not, try the following:&lt;/p&gt;
+&lt;p&gt;If you’ve done everything perfectly up to this point, then you should start seeing the step number and the corresponding loss value. If not, try the following:&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;Double check the paths in your config file.&lt;/li&gt;
+  &lt;li&gt;Double-check the paths in your config file.&lt;/li&gt;
   &lt;li&gt;Export the PYTHONPATH in the appropriate folder as mentioned above. You should be in the ‘research’ folder when doing so.&lt;/li&gt;
   &lt;li&gt;Check to make sure your label map is created properly.&lt;/li&gt;
   &lt;li&gt;Reduce your batch_size to 1 in the config file.&lt;/li&gt;
@@ -388,7 +365,7 @@ The above image illustrates the process to input our training data into the mode
   &lt;li&gt;Visit data augmentation options&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;Next week, we’ll be looking more in-depth into training parameters to boost model performance. We’ll also look into how you can plug in other pretrained models available to us.&lt;/p&gt;
+&lt;p&gt;Next week, we’ll be looking more in-depth into training parameters to boost model performance. We’ll also look into how you can plug in other pre-trained models available to us.&lt;/p&gt;
 </content>
  </entry>
  

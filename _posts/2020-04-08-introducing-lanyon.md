@@ -4,6 +4,7 @@ title: About
 permalink: /about/
 ---
 
+![image](/assets/My.png){: style="float: left}
 Hi! My name is Nikhil. I am an undergrad at Manipal Institute of Technology studying Mechatronics. I am interested in Deep Learning with a specialization in Computer Vision and Data Analytics.
 
 ### What is this for?

@@ -3,15 +3,14 @@ layout: post
 title: License Plate Transcription using Object Detection (Part 1)
 permalink: objdetect-1
 ---
+Today, we'll be taking a look at training your own object detection model that will learn to detect characters on a license plate (Part 1). Next, we'll build some logic to translate our detections into a meaningful number (Part 2).
 
-Today, we'll be looking at how to train your own object detection model that will learn to detect characters on a license plate (Part 1). Next, we'll build some logic to translate our detections into a meaningful number (Part 2).
-
-> I will not be going over installation of the required packages. This bit of information is highly variable across systems and is best left to the reader to take care of. However, I will include resources on the mainstream installation methods.
+> I will not be going over the installation of the required packages. This bit of information is highly variable across systems and is best left to the reader to take care of. However, I will include resources on the mainstream installation methods.
 
  Finally, we'll be looking into deployment onto [Render](https://render.com/), so that it may be accessed through the internet for anyone to test. (Part 2)
 
 ## What other methods exist?
-A license plate can be considered a block of text. Those of you familiar with OpenCV might realize that the library offers the [EAST Text Detector](https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/) to localize a continous block of text. However, this merely identifies the location of the text, and not the contents of the text itself.
+A license plate can be considered a block of text. Those of you familiar with OpenCV might realize that the library offers the [EAST Text Detector](https://www.pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/) to localize a continuous block of text. However, this merely identifies the location of the text and not the contents of the text itself.
 
 For the actual character recognition, you make take advantage of an OCR algorithm called [pytesseract](https://pypi.org/project/pytesseract/). Passing the localized region of text obtained from our text detection algorithm to our OCR algorithm.
 
@@ -19,9 +18,9 @@ For the actual character recognition, you make take advantage of an OCR algorith
 
 Two reasons.
 
-The EAST Text Detector is excellent at localizing text on billboards, signs, and hand writing. However, it struggles to generate an accurate bounding box around the license plate itself. Passing this potentially incorrect bounding box to our Object Detection model as a preprocessing measure can reduce accuracy. Hence we avoid this step.
+The EAST Text Detector is excellent at localizing text on billboards, signs, and handwriting. However, it struggles to generate an accurate bounding box around the license plate itself. Passing this potentially incorrect bounding box to our Object Detection model as a preprocessing measure can reduce accuracy. Hence we avoid this step.
 
-Pytesseract, while useful for variety of character recognition situations, does not do well on license plates as it has not been trained on those types of images. While there [exists a method to train it on your own dataset](https://tesseract-ocr.github.io/tessdoc/Training-Tesseract.html), learning how to build your own object detector for any general application is an essential skill.
+Pytesseract, while useful for a variety of character recognition situations, does not do well on license plates as it has not been trained on those types of images. While there [exists a method to train it on your own dataset](https://tesseract-ocr.github.io/tessdoc/Training-Tesseract.html), learning how to build your own object detector for any general application is an essential skill.
 
 ![Gif](/assets/EAST.gif)
 
@@ -39,7 +38,7 @@ There are 36 different classes (26 alphabets and 10 numbers) that the model will
 
 
 
-The final csv file will look something like this:
+The final CSV file will look something like this:
 
 ![Sample_CSV](/assets/Screenshot_CSV.png)
 
@@ -79,7 +78,7 @@ The API requires that we convert our CSV files into TFRecord files for the train
 
 
 ## Choosing a Model
-Analysing our training data, we see that there are numerous classes that have to be accurately detected. As each detection is crucial to ensure that the license plate is recognized correctly, model accuracy has to be relatively high compared to other object detection tasks. Hence for the purposes of our task, we will be retraining the popular [Faster R-CNN](https://arxiv.org/pdf/1506.01497.pdf).
+Analyzing our training data, we see that numerous classes have to be accurately detected. As each detection is crucial to ensure that the license plate is recognized correctly, model accuracy has to be relatively high compared to other object detection tasks. Hence for the purposes of our task, we will be retraining the popular [Faster R-CNN](https://arxiv.org/pdf/1506.01497.pdf).
 
 ### Creating the Label Map
 
@@ -101,7 +100,7 @@ Edit the label map to reflect our 36 classes and save it as **object_detection.p
 
 ### Setting up Model Parameters
 
-Different deployment scenarios call for different models. Models that need to be run on low end hardware devices such the Raspberry Pi or your smartphone might require a lightweight model such as MobileNet. Assuming we have the resources to do so, you may choose to run a RCNN or NasNet. Whatever the model is, there are two things we need to swap out our model and begin training.
+Different deployment scenarios call for different models. Models that need to be run on low-end hardware devices such as the Raspberry Pi or your smartphone might require a lightweight model such as MobileNet. Assuming we have the resources to do so, you may choose to run an RCNN or NasNet. Whatever the model is, there are two things we need to swap out our model and begin training.
 
 1. Pretrained weights
 2. Config file
@@ -154,9 +153,9 @@ Explanation of the command parameters:
 * model_dir - Path to where all the checkpoints will be saved.
 * pipeline_config_path - Path to the config file.
 
-If you've done everything perfectly up till this point, then you should start seeing the step number and the corresponding loss value. If not, try the following:
+If you've done everything perfectly up to this point, then you should start seeing the step number and the corresponding loss value. If not, try the following:
 
-1. Double check the paths in your config file.
+1. Double-check the paths in your config file.
 2. Export the PYTHONPATH in the appropriate folder as mentioned above. You should be in the 'research' folder when doing so.
 3. Check to make sure your label map is created properly.
 4. Reduce your batch_size to 1 in the config file.
@@ -287,4 +286,4 @@ What can we possibly do to improve model performance?
 2. Choose a more complex model
 3. Visit data augmentation options
 
-Next week, we'll be looking more in-depth into training parameters to boost model performance. We'll also look into how you can plug in other pretrained models available to us.
+Next week, we'll be looking more in-depth into training parameters to boost model performance. We'll also look into how you can plug in other pre-trained models available to us.

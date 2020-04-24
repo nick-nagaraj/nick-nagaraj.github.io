@@ -100,3 +100,5 @@ Next, go ahead and create your own repository on GitHub. Upload the Dockerfile a
 >I won't go into the creation of the webpage itself, as it delves too much into HTML, CSS and JS. I have uploaded the page onto the repo where you can pick up a copy.
 
 ![Webpage](/assets/Webpage.png)
+
+Of course, I can't actually host the webpage at all times as the service costs $7 a month. I will explore [Heroku](https://www.heroku.com)'s free option at a later date. Note that we will probably have to switch to a lighter model such as SSD MobileNet as the service only allows for 512MB of RAM + ROM. 

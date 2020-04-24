@@ -4,7 +4,7 @@
  <title>Nikhil Nagaraj</title>
  <link href="http://localhost:4000/atom.xml" rel="self"/>
  <link href="http://localhost:4000/"/>
- <updated>2020-04-24T12:11:45+05:30</updated>
+ <updated>2020-04-24T12:21:38+05:30</updated>
  <id>http://localhost:4000</id>
  <author>
    <name>Nikhil Nagaraj</name>
@@ -111,6 +111,8 @@
 &lt;/blockquote&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/Webpage.png&quot; alt=&quot;Webpage&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Of course, I can’t actually host the webpage at all times as the service costs $7 a month. I will explore &lt;a href=&quot;https://www.heroku.com&quot;&gt;Heroku&lt;/a&gt;’s free option at a later date. Note that we will probably have to switch to a lighter model such as SSD MobileNet as the service only allows for 512MB of RAM + ROM.&lt;/p&gt;
 </content>
  </entry>
  

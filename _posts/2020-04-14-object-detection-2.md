@@ -13,7 +13,7 @@ Let's take a look at one of our license plates.
 
 ![Sample_2](/assets/NewYork.jpg)
 
-We have access to the (x,y) coordinates of each bounding box. Thus, we sort the detections in the ascending order of x-coordinates. This becomes our license plate number! Making some modifications to our driver code, and running it.
+We have access to the (x,y) coordinates of each bounding box. Thus, we sort the detections in the ascending order of **x-coordinates**. This becomes our license plate number! Making some modifications to our driver code, and running it.
 
 ![Final_Detection](/assets/FINAL_Detection.png)
 
@@ -26,16 +26,16 @@ I wish it were that simple. Sure, the code works for the above license plate. Bu
 
 This particular scenario is not common, but it does present an interesting edge case challenge to our 'out of the box' solution. The next bit is a bit technical in case you'd like to skip the details. It isn't particularly important.
 
-Our first order of business is to detect how many lines of characters are present. License plates typically do not contain more than two lines. Thus our goal is to detect how many lines are present, and which line each character belongs to. Once we know which line each character belongs to, we sort the characters present on each line in ascending orders of their x-coordinates. Finally, we concatenate the characters present on the first line with that of the second line.
+Our first order of business is to detect how many lines of characters are present. License plates typically do not contain more than two lines. Thus our goal is to detect how many lines are present, and which line each character belongs to. Once we know which line each character belongs to, we sort the characters present on each line in ascending orders of their **x-coordinates**. Finally, we concatenate the characters present on the first line with that of the second line.
 
 ### Which Character is on Which Line?
-Here's what we know. Once we sort each detection by their y-coordinate, we can say for sure that the first element will be on the first line. We also know that the last element will be on the last line. Whether this 'last line' is the first line or the second line remains to be seen. So, we draw a horizontal line through the midpoint of the first element. Next, we draw a horizontal line through the midpoint of the last element. If the distance between the two horizontal lines is greater than a particular threshold, then we know that the first character on the license plate and the last character on the license plate are separated by a considerable gap. This means that the first and last character is on two separate lines. If the distance between the two horizontal lines is lesser than a particular threshold, then odds are, it's on a single line.
+Here's what we know. Once we sort each detection by their **y-coordinate**, we can say for sure that the first element will be on the first line. We also know that the last element will be on the last line. Whether this 'last line' is the first line or the second line remains to be seen. So, we draw a horizontal line through the midpoint of the first element. Next, we draw a horizontal line through the midpoint of the last element. If the distance between the two horizontal lines is greater than a particular threshold, then we know that the first character on the license plate and the last character on the license plate are separated by a considerable gap. This means that the first and last character is on two separate lines. If the distance between the two horizontal lines is lesser than a particular threshold, then odds are, it's on a single line.
 
 ![Line_1](/assets/Lines_1.png)
 ![Line_2](/assets/Lines_2.png)
 
 ### Sorting Each Line
-Whether there's one line or two, once we know which line each character belongs to, we sort the line in ascending order of x-coordinates. Assuming there's one, we now have the transcribed number plate! If there's two, we sort the first line. Then, we sort the second line. Finally, we append the sorted detections from the second line to the sorted detections from the first line. You can write your own script to automate this and output this information into a more useful format such as a CSV file. Given [here](/) (Yet to be uploaded) is the modified driver program.
+Whether there's one line or two, once we know which line each character belongs to, we sort the line in ascending order of **x-coordinates**. Assuming there's one, we now have the transcribed number plate! If there's two, we sort the first line. Then, we sort the second line. Finally, we append the sorted detections from the second line to the sorted detections from the first line. You can write your own script to automate this and output this information into a more useful format such as a CSV file. Given [here](/) (Yet to be uploaded) is the modified driver program.
 
 
 ## Deployment
@@ -92,3 +92,11 @@ EXPOSE 8888
 CMD ["python3", "/tensorflow/models/research/object_detection/required_files/app/server.py", "serve"]
 
 {% endhighlight %}
+
+For an explanation of the respective commands used, take a look at the Docker documentation.
+
+Next, go ahead and create your own repository on GitHub. Upload the Dockerfile as well as the required files to the repo. Next, create an account on Render, and link the repo. Everything should be up and running! Given below is a screenshot of our page!
+
+>I won't go into the creation of the webpage itself, as it delves too much into HTML, CSS and JS. I have uploaded the page onto the repo where you can pick up a copy.
+
+![Webpage](/assets/Webpage.png)

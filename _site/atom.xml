@@ -4,7 +4,7 @@
  <title>Nikhil Nagaraj</title>
  <link href="http://localhost:4000/atom.xml" rel="self"/>
  <link href="http://localhost:4000/"/>
- <updated>2020-04-20T01:49:23+05:30</updated>
+ <updated>2020-04-24T12:11:45+05:30</updated>
  <id>http://localhost:4000</id>
  <author>
    <name>Nikhil Nagaraj</name>
@@ -26,7 +26,7 @@
 
 &lt;p&gt;&lt;img src=&quot;/assets/NewYork.jpg&quot; alt=&quot;Sample_2&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;We have access to the (x,y) coordinates of each bounding box. Thus, we sort the detections in the ascending order of x-coordinates. This becomes our license plate number! Making some modifications to our driver code, and running it.&lt;/p&gt;
+&lt;p&gt;We have access to the (x,y) coordinates of each bounding box. Thus, we sort the detections in the ascending order of &lt;strong&gt;x-coordinates&lt;/strong&gt;. This becomes our license plate number! Making some modifications to our driver code, and running it.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/FINAL_Detection.png&quot; alt=&quot;Final_Detection&quot; /&gt;&lt;/p&gt;
 
@@ -39,22 +39,78 @@
 
 &lt;p&gt;This particular scenario is not common, but it does present an interesting edge case challenge to our ‘out of the box’ solution. The next bit is a bit technical in case you’d like to skip the details. It isn’t particularly important.&lt;/p&gt;
 
-&lt;p&gt;Our first order of business is to detect how many lines of characters are present. License plates typically do not contain more than two lines. Thus our goal is to detect how many lines are present, and which line each character belongs to. Once we know which line each character belongs to, we sort the characters present on each line in ascending orders of their x-coordinates. Finally, we concatenate the characters present on the first line with that of the second line.&lt;/p&gt;
+&lt;p&gt;Our first order of business is to detect how many lines of characters are present. License plates typically do not contain more than two lines. Thus our goal is to detect how many lines are present, and which line each character belongs to. Once we know which line each character belongs to, we sort the characters present on each line in ascending orders of their &lt;strong&gt;x-coordinates&lt;/strong&gt;. Finally, we concatenate the characters present on the first line with that of the second line.&lt;/p&gt;
 
 &lt;h3 id=&quot;which-character-is-on-which-line&quot;&gt;Which Character is on Which Line?&lt;/h3&gt;
-&lt;p&gt;Here’s what we know. Once we sort each detection by their y-coordinate, we can say for sure that the first element will be on the first line. We also know that the last element will be on the last line. Whether this ‘last line’ is the first line or the second line remains to be seen. So, we draw a horizontal line through the midpoint of the first element. Next, we draw a horizontal line through the midpoint of the last element. If the distance between the two horizontal lines is greater than a particular threshold, then we know that the first character on the license plate and the last character on the license plate are separated by a considerable gap. This means that the first and last character is on two separate lines. If the distance between the two horizontal lines is lesser than a particular threshold, then odds are, it’s on a single line.&lt;/p&gt;
+&lt;p&gt;Here’s what we know. Once we sort each detection by their &lt;strong&gt;y-coordinate&lt;/strong&gt;, we can say for sure that the first element will be on the first line. We also know that the last element will be on the last line. Whether this ‘last line’ is the first line or the second line remains to be seen. So, we draw a horizontal line through the midpoint of the first element. Next, we draw a horizontal line through the midpoint of the last element. If the distance between the two horizontal lines is greater than a particular threshold, then we know that the first character on the license plate and the last character on the license plate are separated by a considerable gap. This means that the first and last character is on two separate lines. If the distance between the two horizontal lines is lesser than a particular threshold, then odds are, it’s on a single line.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/Lines_1.png&quot; alt=&quot;Line_1&quot; /&gt;
 &lt;img src=&quot;/assets/Lines_2.png&quot; alt=&quot;Line_2&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;sorting-each-line&quot;&gt;Sorting Each Line&lt;/h3&gt;
-&lt;p&gt;Whether there’s one line or two, once we know which line each character belongs to, we sort the line in ascending order of x-coordinates. Assuming there’s one, we now have the transcribed number plate! If there’s two, we sort the first line. Then, we sort the second line. Finally, we append the sorted detections from the second line to the sorted detections from the first line. You can write your own script to automate this and output this information into a more useful format such as a CSV file. Given &lt;a href=&quot;/&quot;&gt;here&lt;/a&gt; (Yet to be uploaded) is the modified driver program.&lt;/p&gt;
+&lt;p&gt;Whether there’s one line or two, once we know which line each character belongs to, we sort the line in ascending order of &lt;strong&gt;x-coordinates&lt;/strong&gt;. Assuming there’s one, we now have the transcribed number plate! If there’s two, we sort the first line. Then, we sort the second line. Finally, we append the sorted detections from the second line to the sorted detections from the first line. You can write your own script to automate this and output this information into a more useful format such as a CSV file. Given &lt;a href=&quot;/&quot;&gt;here&lt;/a&gt; (Yet to be uploaded) is the modified driver program.&lt;/p&gt;
 
 &lt;h2 id=&quot;deployment&quot;&gt;Deployment&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&quot;https://render.com/&quot;&gt;Render&lt;/a&gt; is a brilliant service that allows you to host your containerized applications on the cloud, allowing executable access to anyone to access your project! By the end of this, we’ll be able to upload an image, and view the license plate number on the website.So how do we package our application so that all our dependencies are available? The answer, is that we create a isolated environment for our application so that it can run independently on any system or service. &lt;a href=&quot;https://docs.docker.com/get-started/&quot;&gt;Docker&lt;/a&gt; is the magic word. Docker allows us to neatly package our code into a container, which can later be run through a Render web service.&lt;/p&gt;
 
 &lt;h3 id=&quot;containerization&quot;&gt;Containerization&lt;/h3&gt;
-&lt;p&gt;Let’s go ahead and setup Docker on our system. Installation instructions are provided &lt;a href=&quot;/https://docs.docker.com/engine/install/ubuntu/&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Let’s go ahead and setup Docker on our system. Installation instructions are provided &lt;a href=&quot;/https://docs.docker.com/engine/install/ubuntu/&quot;&gt;here&lt;/a&gt;. The key step is to create a Dockerfile. What is a Dockerfile? It consists instructions that the container runs to ensure that the application encased can run properly. We specify the instructions that are needed to run our application within the container. For this particular application, here is my Dockerfile:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-py&quot; data-lang=&quot;py&quot;&gt;&lt;span class=&quot;n&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;ubuntu:bionic&quot;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;update&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;yes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;upgrade&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;libsm6&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;libxext6&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;libxrender&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;libglib2&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;.0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;python3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pip&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;upgrade&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;opencv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;python&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tensorflow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.15.0&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fastai&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.0.52&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;protobuf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compiler&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;python3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pil&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;python3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lxml&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;matplotlib&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mkdir&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensorflow&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;aiofiles&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.4.0&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;uvicorn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.7.1&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;aiohttp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;3.5.4&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;asyncio&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;3.4.3&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pillow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;~=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;6.0&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;python&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;multipart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.0.5&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pip3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;starlette&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.12.0&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;RUN&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clone&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;https&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;//&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;github&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;com&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensorflow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;models&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensorflow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;models&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;COPY&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;required_files&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensorflow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;models&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;research&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;object_detection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;required_files&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;WORKDIR&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensorflow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;models&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;research&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;EXPOSE&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8888&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;CMD&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;python3&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/tensorflow/models/research/object_detection/required_files/app/server.py&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;serve&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;For an explanation of the respective commands used, take a look at the Docker documentation.&lt;/p&gt;
+
+&lt;p&gt;Next, go ahead and create your own repository on GitHub. Upload the Dockerfile as well as the required files to the repo. Next, create an account on Render, and link the repo. Everything should be up and running! Given below is a screenshot of our page!&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;I won’t go into the creation of the webpage itself, as it delves too much into HTML, CSS and JS. I have uploaded the page onto the repo where you can pick up a copy.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Webpage.png&quot; alt=&quot;Webpage&quot; /&gt;&lt;/p&gt;
 </content>
  </entry>
  

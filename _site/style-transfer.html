@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Neural Style Transfer with Convolutional Neural Networks &middot; Nikhil Nagaraj
+    
+  </title>
+
+  
+  <link rel="canonical" href="http://localhost:4000/style-transfer">
+  
+
+  <link rel="stylesheet" href="http://localhost:4000/public/css/poole.css">
+  <link rel="stylesheet" href="http://localhost:4000/public/css/syntax.css">
+  <link rel="stylesheet" href="http://localhost:4000/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://localhost:4000/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="http://localhost:4000/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://localhost:4000/atom.xml">
+
+  
+</head>
+
+
+  <body class="theme-base-08" "sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Deployed on Github Pages</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="https://nick-nagaraj.github.io/">Home</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+
+    <a class="sidebar-nav-item" href="https://github.com/nick-nagaraj/">GitHub projects</a>
+    <span class="sidebar-nav-item">Currently v1.0.0</span>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2020. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Nikhil Nagaraj</a>
+            <small>Student</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Neural Style Transfer with Convolutional Neural Networks</h1>
+  <span class="post-date">21 Apr 2020</span>
+  <p>Let’s make some art! I’m terrible, but luckily pre-trained CNNs are great at it. What is Neural Style Transfer (NST)? It’s probably best to explain with an image.</p>
+
+<p><img src="/assets/Example.jpeg" alt="Example" /></p>
+
+<p>The input consists of two images. One image provides the structural information and will form the basis of the output styled image. The other, will control the color and texture of our resultant image.</p>
+
+<p><img src="/assets/Example2.png" alt="Example" /></p>
+
+<h2 id="why-convolutional-neural-networks">Why Convolutional Neural Networks?</h2>
+<p>The original purpose of CNNs was to produce better feature representations for classifying, detecting and segmenting objects in images. Their main purpose in NST’s will be used to <strong>encode representations of image features</strong>. It is important to distinguish the difference between <strong>encoding the image</strong>, and <strong>encoding image features</strong>. Image features are inherently present across different images and make up the image itself. CNNs learn these image features, rather than learn what makes up a single image. That is why it is important to feed multiple images. Encoding images does not let the CNN learn what exactly distinguishes each image from another.</p>
+
+<h3 id="cnns-for-representations">CNNs for Representations</h3>
+<blockquote>
+  <p>This won’t be an explanation on the actual working of a CNN. There are numerous available <a href="https://medium.com/technologymadeeasy/the-best-explanation-of-convolutional-neural-networks-on-the-internet-fbb8b1ad5df8">resources</a>. Instead, we’ll focus on adapting it for NST.</p>
+</blockquote>
+
+<p>Let’s take a look at the original paper, <a href="https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf">Gatys et al.</a> The original CNN that is used to extract image representations is VGG-19. Taking a look at the model architecture,</p>
+
+<p><img src="/assets/CNN_Arch.jpg" alt="CNN_Arch" /></p>
+
+<p>The main idea behind the paper was to learn important feature representations behind both the <strong>content</strong> image and <strong>style</strong> image. Across each subsequent convolutional layer, more complex features are learned. Thus, the key is to learn enough structural information from the <strong>content</strong> image and enough style information from the <strong>style</strong> image to form the perfect blended result image. The paper provides useful information on which layer to get this information from. The entire idea can be broken up into two key components.</p>
+
+<ul>
+  <li>
+    <p>Through empirical evidence, the paper has made it clear that the best results are obtained when we extract information from the 4th convolutional layer for the structural information. (Why we don’t take the output from the 5th convolutional layer remains to be seen. We will compare both to understand their choice.)</p>
+  </li>
+  <li>
+    <p>As for style information, it is difficult to pinpoint a single layer. Style is ambiguous, and requires both simple and complex features to truly be incorporated. The authors of the paper have determined that it is best to include information from each convolutional layer.</p>
+  </li>
+</ul>
+
+<h3 id="loss-function">Loss Function</h3>
+<p>Traditional loss functions try to quantify the difference between the <strong>ground truth</strong> and <strong>predicted</strong> values. This loss function is typically the main focus of optimization during the gradient descent process. For example, the loss function used in binary classification is Binary Cross-Entropy.</p>
+
+<p><img src="/assets/Cross_Entropy.png" alt="Cross_Entropy" /></p>
+
+<p>However, this loss function has no practical meaning for our application. What exactly is the “ground truth”? The paper illustrates a custom loss function that consists of two main components.</p>
+
+</div>
+
+
+<div class="related">
+  <h2>Related posts</h2>
+  <ul class="related-posts">
+    
+    
+      <li>
+        <h3>
+          <a href="/objdetect-2">
+            License Plate Transcription using Object Detection (Part 2)
+            <small>14 Apr 2020</small>
+          </a>
+        </h3>
+      </li>
+    
+    
+      
+    
+      <li>
+        <h3>
+          <a href="/objdetect-1">
+            License Plate Transcription using Object Detection (Part 1)
+            <small>07 Apr 2020</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>

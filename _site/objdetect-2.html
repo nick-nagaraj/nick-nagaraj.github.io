@@ -73,6 +73,10 @@
         
       
     
+      
+        
+      
+    
 
     <a class="sidebar-nav-item" href="https://github.com/nick-nagaraj/">GitHub projects</a>
     <span class="sidebar-nav-item">Currently v1.0.0</span>
@@ -102,7 +106,7 @@
         <div class="post">
   <h1 class="post-title">License Plate Transcription using Object Detection (Part 2)</h1>
   <span class="post-date">14 Apr 2020</span>
-  <p>Last week we looked into the basic functionality of the TensorFlow Object Detection API. We ran our object detection model to transcribe license plates. This week, we’ll look into some of the options available to us during the training process. Next, we’ll build some OpenCV logic to order the detections, creating a meaningful number. Finally, deployment will be the name of the game.</p>
+  <p>Last week we looked into the basic functionality of the TensorFlow Object Detection API. We ran our object detection model to transcribe license plates. This week, we’ll look into some of the options available to us during the training process. Next, we’ll build some OpenCV logic to order the detections, creating a meaningful number. Finally, deployment will be the name of the game. We’ll create a simple web application to serve up our model.</p>
 
 <h2 id="ordering-our-detections">Ordering our detections</h2>
 <p>If you run the driver program from last week, you’ll notice that the detections are ordered by the confidence of each bounding box. While this is useful for understanding which letters our model is most accurate on, it does not reflect the order of the characters present on the license plate. So, how do we fix this?</p>
@@ -136,10 +140,10 @@
 <p>Whether there’s one line or two, once we know which line each character belongs to, we sort the line in ascending order of <strong>x-coordinates</strong>. Assuming there’s one, we now have the transcribed number plate! If there’s two, we sort the first line. Then, we sort the second line. Finally, we append the sorted detections from the second line to the sorted detections from the first line. You can write your own script to automate this and output this information into a more useful format such as a CSV file. Given <a href="/">here</a> (Yet to be uploaded) is the modified driver program.</p>
 
 <h2 id="deployment">Deployment</h2>
-<p><a href="https://render.com/">Render</a> is a brilliant service that allows you to host your containerized applications on the cloud, allowing executable access to anyone to access your project! By the end of this, we’ll be able to upload an image, and view the license plate number on the website.So how do we package our application so that all our dependencies are available? The answer, is that we create a isolated environment for our application so that it can run independently on any system or service. <a href="https://docs.docker.com/get-started/">Docker</a> is the magic word. Docker allows us to neatly package our code into a container, which can later be run through a Render web service.</p>
+<p><a href="https://render.com/">Render</a> is a brilliant service that allows you to host your containerized applications on the cloud, allowing executable access to anyone to access your project! By the end of this, we’ll be able to upload an image and view the license plate number on the website. So how do we package our application so that all our dependencies are available? The answer, is that we create an isolated environment for our application so that it can run independently on any system or service. <a href="https://docs.docker.com/get-started/">Docker</a> is the magic word. Docker allows us to neatly package our code into a container, which can later be run through a Render web service. Thus we will be creating a simple web application.</p>
 
 <h3 id="containerization">Containerization</h3>
-<p>Let’s go ahead and setup Docker on our system. Installation instructions are provided <a href="/https://docs.docker.com/engine/install/ubuntu/">here</a>. The key step is to create a Dockerfile. What is a Dockerfile? It consists instructions that the container runs to ensure that the application encased can run properly. We specify the instructions that are needed to run our application within the container. For this particular application, here is my Dockerfile:</p>
+<p>Let’s go ahead and set up Docker on our system. Installation instructions are provided <a href="/https://docs.docker.com/engine/install/ubuntu/">here</a>. The key step is to create a Dockerfile. What is a Dockerfile? It consists of instructions that the container runs to ensure that the application encased can run properly. We specify the instructions that are needed to run our application within the container. For this particular application, here is my Dockerfile:</p>
 
 <figure class="highlight"><pre><code class="language-py" data-lang="py"><span class="n">FROM</span> <span class="s">"ubuntu:bionic"</span>
 
@@ -198,12 +202,12 @@
 <p>Next, go ahead and create your own repository on GitHub. Upload the Dockerfile as well as the required files to the repo. Next, create an account on Render, and link the repo. Everything should be up and running! Given below is a screenshot of our page!</p>
 
 <blockquote>
-  <p>I won’t go into the creation of the webpage itself, as it delves too much into HTML, CSS and JS. I have uploaded the page onto the repo where you can pick up a copy.</p>
+  <p>I won’t go into the creation of the webpage itself, as it delves too much into HTML, CSS, and JS. I have uploaded the page onto the repo where you can pick up a copy.</p>
 </blockquote>
 
 <p><img src="/assets/Webpage.png" alt="Webpage" /></p>
 
-<p>Of course, I can’t actually host the webpage at all times as the service costs $7 a month. I will explore <a href="https://www.heroku.com">Heroku</a>’s free option at a later date. Note that we will probably have to switch to a lighter model such as SSD MobileNet as the service only allows for 512MB of RAM + ROM.</p>
+<p>Of course, I can’t actually host the webpage at all times as the service costs $7 a month. I will explore <a href="https://www.heroku.com">Heroku</a>’s a free option at a later date. Note that we will probably have to switch to a lighter model such as SSD MobileNet as the service only allows for 512MB of RAM + ROM.</p>
 
 </div>
 
@@ -211,6 +215,16 @@
 <div class="related">
   <h2>Related posts</h2>
   <ul class="related-posts">
+    
+    
+      <li>
+        <h3>
+          <a href="/style-transfer">
+            Neural Style Transfer with Convolutional Neural Networks
+            <small>21 Apr 2020</small>
+          </a>
+        </h3>
+      </li>
     
     
       

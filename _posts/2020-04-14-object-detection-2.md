@@ -4,7 +4,7 @@ title: License Plate Transcription using Object Detection (Part 2)
 permalink: objdetect-2
 ---
 
-Last week we looked into the basic functionality of the TensorFlow Object Detection API. We ran our object detection model to transcribe license plates. This week, we'll look into some of the options available to us during the training process. Next, we'll build some OpenCV logic to order the detections, creating a meaningful number. Finally, deployment will be the name of the game.  
+Last week we looked into the basic functionality of the TensorFlow Object Detection API. We ran our object detection model to transcribe license plates. This week, we'll look into some of the options available to us during the training process. Next, we'll build some OpenCV logic to order the detections, creating a meaningful number. Finally, deployment will be the name of the game. We'll create a simple web application to serve up our model.
 
 ## Ordering our detections
 If you run the driver program from last week, you'll notice that the detections are ordered by the confidence of each bounding box. While this is useful for understanding which letters our model is most accurate on, it does not reflect the order of the characters present on the license plate. So, how do we fix this?
@@ -39,10 +39,10 @@ Whether there's one line or two, once we know which line each character belongs 
 
 
 ## Deployment
-[Render](https://render.com/) is a brilliant service that allows you to host your containerized applications on the cloud, allowing executable access to anyone to access your project! By the end of this, we'll be able to upload an image, and view the license plate number on the website.So how do we package our application so that all our dependencies are available? The answer, is that we create a isolated environment for our application so that it can run independently on any system or service. [Docker](https://docs.docker.com/get-started/) is the magic word. Docker allows us to neatly package our code into a container, which can later be run through a Render web service.
+[Render](https://render.com/) is a brilliant service that allows you to host your containerized applications on the cloud, allowing executable access to anyone to access your project! By the end of this, we'll be able to upload an image and view the license plate number on the website. So how do we package our application so that all our dependencies are available? The answer, is that we create an isolated environment for our application so that it can run independently on any system or service. [Docker](https://docs.docker.com/get-started/) is the magic word. Docker allows us to neatly package our code into a container, which can later be run through a Render web service. Thus we will be creating a simple web application.
 
 ### Containerization
-Let's go ahead and setup Docker on our system. Installation instructions are provided [here](/https://docs.docker.com/engine/install/ubuntu/). The key step is to create a Dockerfile. What is a Dockerfile? It consists instructions that the container runs to ensure that the application encased can run properly. We specify the instructions that are needed to run our application within the container. For this particular application, here is my Dockerfile:
+Let's go ahead and set up Docker on our system. Installation instructions are provided [here](/https://docs.docker.com/engine/install/ubuntu/). The key step is to create a Dockerfile. What is a Dockerfile? It consists of instructions that the container runs to ensure that the application encased can run properly. We specify the instructions that are needed to run our application within the container. For this particular application, here is my Dockerfile:
 
 {% highlight py %}
 FROM "ubuntu:bionic"
@@ -106,8 +106,8 @@ For an explanation of the respective commands used, take a look at the Docker [d
 
 Next, go ahead and create your own repository on GitHub. Upload the Dockerfile as well as the required files to the repo. Next, create an account on Render, and link the repo. Everything should be up and running! Given below is a screenshot of our page!
 
->I won't go into the creation of the webpage itself, as it delves too much into HTML, CSS and JS. I have uploaded the page onto the repo where you can pick up a copy.
+>I won't go into the creation of the webpage itself, as it delves too much into HTML, CSS, and JS. I have uploaded the page onto the repo where you can pick up a copy.
 
 ![Webpage](/assets/Webpage.png)
 
-Of course, I can't actually host the webpage at all times as the service costs $7 a month. I will explore [Heroku](https://www.heroku.com)'s free option at a later date. Note that we will probably have to switch to a lighter model such as SSD MobileNet as the service only allows for 512MB of RAM + ROM.
+Of course, I can't actually host the webpage at all times as the service costs $7 a month. I will explore [Heroku](https://www.heroku.com)'s a free option at a later date. Note that we will probably have to switch to a lighter model such as SSD MobileNet as the service only allows for 512MB of RAM + ROM.

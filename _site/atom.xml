@@ -4,7 +4,7 @@
  <title>Nikhil Nagaraj</title>
  <link href="http://localhost:4000/atom.xml" rel="self"/>
  <link href="http://localhost:4000/"/>
- <updated>2020-04-24T13:17:38+05:30</updated>
+ <updated>2020-04-25T14:58:26+05:30</updated>
  <id>http://localhost:4000</id>
  <author>
    <name>Nikhil Nagaraj</name>
@@ -13,11 +13,56 @@
 
  
  <entry>
+   <title>Neural Style Transfer with Convolutional Neural Networks</title>
+   <link href="http://localhost:4000/style-transfer"/>
+   <updated>2020-04-21T00:00:00+05:30</updated>
+   <id>http://localhost:4000/style-transfer</id>
+   <content type="html">&lt;p&gt;Let’s make some art! I’m terrible, but luckily pre-trained CNNs are great at it. What is Neural Style Transfer (NST)? It’s probably best to explain with an image.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Example.jpeg&quot; alt=&quot;Example&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The input consists of two images. One image provides the structural information and will form the basis of the output styled image. The other, will control the color and texture of our resultant image.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Example2.png&quot; alt=&quot;Example&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;why-convolutional-neural-networks&quot;&gt;Why Convolutional Neural Networks?&lt;/h2&gt;
+&lt;p&gt;The original purpose of CNNs was to produce better feature representations for classifying, detecting and segmenting objects in images. Their main purpose in NST’s will be used to &lt;strong&gt;encode representations of image features&lt;/strong&gt;. It is important to distinguish the difference between &lt;strong&gt;encoding the image&lt;/strong&gt;, and &lt;strong&gt;encoding image features&lt;/strong&gt;. Image features are inherently present across different images and make up the image itself. CNNs learn these image features, rather than learn what makes up a single image. That is why it is important to feed multiple images. Encoding images does not let the CNN learn what exactly distinguishes each image from another.&lt;/p&gt;
+
+&lt;h3 id=&quot;cnns-for-representations&quot;&gt;CNNs for Representations&lt;/h3&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;This won’t be an explanation on the actual working of a CNN. There are numerous available &lt;a href=&quot;https://medium.com/technologymadeeasy/the-best-explanation-of-convolutional-neural-networks-on-the-internet-fbb8b1ad5df8&quot;&gt;resources&lt;/a&gt;. Instead, we’ll focus on adapting it for NST.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Let’s take a look at the original paper, &lt;a href=&quot;https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf&quot;&gt;Gatys et al.&lt;/a&gt; The original CNN that is used to extract image representations is VGG-19. Taking a look at the model architecture,&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/CNN_Arch.jpg&quot; alt=&quot;CNN_Arch&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The main idea behind the paper was to learn important feature representations behind both the &lt;strong&gt;content&lt;/strong&gt; image and &lt;strong&gt;style&lt;/strong&gt; image. Across each subsequent convolutional layer, more complex features are learned. Thus, the key is to learn enough structural information from the &lt;strong&gt;content&lt;/strong&gt; image and enough style information from the &lt;strong&gt;style&lt;/strong&gt; image to form the perfect blended result image. The paper provides useful information on which layer to get this information from. The entire idea can be broken up into two key components.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Through empirical evidence, the paper has made it clear that the best results are obtained when we extract information from the 4th convolutional layer for the structural information. (Why we don’t take the output from the 5th convolutional layer remains to be seen. We will compare both to understand their choice.)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;As for style information, it is difficult to pinpoint a single layer. Style is ambiguous, and requires both simple and complex features to truly be incorporated. The authors of the paper have determined that it is best to include information from each convolutional layer.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;loss-function&quot;&gt;Loss Function&lt;/h3&gt;
+&lt;p&gt;Traditional loss functions try to quantify the difference between the &lt;strong&gt;ground truth&lt;/strong&gt; and &lt;strong&gt;predicted&lt;/strong&gt; values. This loss function is typically the main focus of optimization during the gradient descent process. For example, the loss function used in binary classification is Binary Cross-Entropy.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Cross_Entropy.png&quot; alt=&quot;Cross_Entropy&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;However, this loss function has no practical meaning for our application. What exactly is the “ground truth”? The paper illustrates a custom loss function that consists of two main components.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
    <title>License Plate Transcription using Object Detection (Part 2)</title>
    <link href="http://localhost:4000/objdetect-2"/>
    <updated>2020-04-14T00:00:00+05:30</updated>
    <id>http://localhost:4000/object-detection-2</id>
-   <content type="html">&lt;p&gt;Last week we looked into the basic functionality of the TensorFlow Object Detection API. We ran our object detection model to transcribe license plates. This week, we’ll look into some of the options available to us during the training process. Next, we’ll build some OpenCV logic to order the detections, creating a meaningful number. Finally, deployment will be the name of the game.&lt;/p&gt;
+   <content type="html">&lt;p&gt;Last week we looked into the basic functionality of the TensorFlow Object Detection API. We ran our object detection model to transcribe license plates. This week, we’ll look into some of the options available to us during the training process. Next, we’ll build some OpenCV logic to order the detections, creating a meaningful number. Finally, deployment will be the name of the game. We’ll create a simple web application to serve up our model.&lt;/p&gt;
 
 &lt;h2 id=&quot;ordering-our-detections&quot;&gt;Ordering our detections&lt;/h2&gt;
 &lt;p&gt;If you run the driver program from last week, you’ll notice that the detections are ordered by the confidence of each bounding box. While this is useful for understanding which letters our model is most accurate on, it does not reflect the order of the characters present on the license plate. So, how do we fix this?&lt;/p&gt;
@@ -51,10 +96,10 @@
 &lt;p&gt;Whether there’s one line or two, once we know which line each character belongs to, we sort the line in ascending order of &lt;strong&gt;x-coordinates&lt;/strong&gt;. Assuming there’s one, we now have the transcribed number plate! If there’s two, we sort the first line. Then, we sort the second line. Finally, we append the sorted detections from the second line to the sorted detections from the first line. You can write your own script to automate this and output this information into a more useful format such as a CSV file. Given &lt;a href=&quot;/&quot;&gt;here&lt;/a&gt; (Yet to be uploaded) is the modified driver program.&lt;/p&gt;
 
 &lt;h2 id=&quot;deployment&quot;&gt;Deployment&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&quot;https://render.com/&quot;&gt;Render&lt;/a&gt; is a brilliant service that allows you to host your containerized applications on the cloud, allowing executable access to anyone to access your project! By the end of this, we’ll be able to upload an image, and view the license plate number on the website.So how do we package our application so that all our dependencies are available? The answer, is that we create a isolated environment for our application so that it can run independently on any system or service. &lt;a href=&quot;https://docs.docker.com/get-started/&quot;&gt;Docker&lt;/a&gt; is the magic word. Docker allows us to neatly package our code into a container, which can later be run through a Render web service.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://render.com/&quot;&gt;Render&lt;/a&gt; is a brilliant service that allows you to host your containerized applications on the cloud, allowing executable access to anyone to access your project! By the end of this, we’ll be able to upload an image and view the license plate number on the website. So how do we package our application so that all our dependencies are available? The answer, is that we create an isolated environment for our application so that it can run independently on any system or service. &lt;a href=&quot;https://docs.docker.com/get-started/&quot;&gt;Docker&lt;/a&gt; is the magic word. Docker allows us to neatly package our code into a container, which can later be run through a Render web service. Thus we will be creating a simple web application.&lt;/p&gt;
 
 &lt;h3 id=&quot;containerization&quot;&gt;Containerization&lt;/h3&gt;
-&lt;p&gt;Let’s go ahead and setup Docker on our system. Installation instructions are provided &lt;a href=&quot;/https://docs.docker.com/engine/install/ubuntu/&quot;&gt;here&lt;/a&gt;. The key step is to create a Dockerfile. What is a Dockerfile? It consists instructions that the container runs to ensure that the application encased can run properly. We specify the instructions that are needed to run our application within the container. For this particular application, here is my Dockerfile:&lt;/p&gt;
+&lt;p&gt;Let’s go ahead and set up Docker on our system. Installation instructions are provided &lt;a href=&quot;/https://docs.docker.com/engine/install/ubuntu/&quot;&gt;here&lt;/a&gt;. The key step is to create a Dockerfile. What is a Dockerfile? It consists of instructions that the container runs to ensure that the application encased can run properly. We specify the instructions that are needed to run our application within the container. For this particular application, here is my Dockerfile:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-py&quot; data-lang=&quot;py&quot;&gt;&lt;span class=&quot;n&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;ubuntu:bionic&quot;&lt;/span&gt;
 
@@ -113,12 +158,12 @@
 &lt;p&gt;Next, go ahead and create your own repository on GitHub. Upload the Dockerfile as well as the required files to the repo. Next, create an account on Render, and link the repo. Everything should be up and running! Given below is a screenshot of our page!&lt;/p&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;I won’t go into the creation of the webpage itself, as it delves too much into HTML, CSS and JS. I have uploaded the page onto the repo where you can pick up a copy.&lt;/p&gt;
+  &lt;p&gt;I won’t go into the creation of the webpage itself, as it delves too much into HTML, CSS, and JS. I have uploaded the page onto the repo where you can pick up a copy.&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/Webpage.png&quot; alt=&quot;Webpage&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Of course, I can’t actually host the webpage at all times as the service costs $7 a month. I will explore &lt;a href=&quot;https://www.heroku.com&quot;&gt;Heroku&lt;/a&gt;’s free option at a later date. Note that we will probably have to switch to a lighter model such as SSD MobileNet as the service only allows for 512MB of RAM + ROM.&lt;/p&gt;
+&lt;p&gt;Of course, I can’t actually host the webpage at all times as the service costs $7 a month. I will explore &lt;a href=&quot;https://www.heroku.com&quot;&gt;Heroku&lt;/a&gt;’s a free option at a later date. Note that we will probably have to switch to a lighter model such as SSD MobileNet as the service only allows for 512MB of RAM + ROM.&lt;/p&gt;
 </content>
  </entry>
  

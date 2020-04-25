@@ -1,0 +1,13 @@
+I"+<p>Let’s make some art! I’m terrible, but luckily pre-trained CNNs are great at it. What is Neural Style Transfer? It’s probably best to explain with an image.</p>
+
+<p><img src="/assets/Example.jpeg" alt="Example" /></p>
+
+<p>The input consists of two images. One image provides the structural information and will form the basis of the output styled image. The other, will control the color and texture of our resultant image.</p>
+
+<p><img src="/assets/Example2.png" alt="Example" /></p>
+
+<h2 id="why-convolutional-neural-networks">Why Convolutional Neural Networks?</h2>
+<p>The original purpose of CNNs was to produce better feature representations for classifying, detecting and segmenting objects in images. Their main purpose in NST’s will be used to <strong>encode representations of image features</strong>. It is important to distinguish the difference between <strong>encoding the image</strong>, and <strong>encoding image features</strong>. Image features are inherently present across different images and make up the image itself. CNNs learn these image features, rather than learn what makes up a single image. That is why it is important to feed multiple images. Encoding images does not let the CNN learn what exactly distinguishes each image from another.</p>
+
+<h3 id="cnns-in-nst">CNNs in NST</h3>
+:ET

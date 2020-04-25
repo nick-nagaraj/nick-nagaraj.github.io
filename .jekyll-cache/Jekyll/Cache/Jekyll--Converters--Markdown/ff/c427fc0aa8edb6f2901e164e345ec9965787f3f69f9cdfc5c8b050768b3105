@@ -1,0 +1,33 @@
+I"<p>Let’s make some art! I’m terrible, but luckily pre-trained CNNs are great at it. What is Neural Style Transfer (NST)? It’s probably best to explain with an image.</p>
+
+<p><img src="/assets/Example.jpeg" alt="Example" /></p>
+
+<p>The input consists of two images. One image provides the structural information and will form the basis of the output styled image. The other, will control the color and texture of our resultant image.</p>
+
+<p><img src="/assets/Example2.png" alt="Example" /></p>
+
+<h2 id="why-convolutional-neural-networks">Why Convolutional Neural Networks?</h2>
+<p>The original purpose of CNNs was to produce better feature representations for classifying, detecting and segmenting objects in images. Their main purpose in NST’s will be used to <strong>encode representations of image features</strong>. It is important to distinguish the difference between <strong>encoding the image</strong>, and <strong>encoding image features</strong>. Image features are inherently present across different images and make up the image itself. CNNs learn these image features, rather than learn what makes up a single image. That is why it is important to feed multiple images. Encoding images does not let the CNN learn what exactly distinguishes each image from another.</p>
+
+<h3 id="cnns-for-representations">CNNs for Representations</h3>
+<blockquote>
+  <p>This won’t be an explanation on the actual working of a CNN. There are numerous available <a href="https://medium.com/technologymadeeasy/the-best-explanation-of-convolutional-neural-networks-on-the-internet-fbb8b1ad5df8">resources</a>. Instead, we’ll focus on adapting it for NST.</p>
+</blockquote>
+
+<p>Let’s take a look at the original paper, <a href="https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf">Gatys et al.</a> The original CNN that is used to extract image representations is VGG-19. Taking a look at the model architecture,</p>
+
+<p><img src="/assets/CNN_Arch.jpg" alt="CNN_Arch" /></p>
+
+<p>The main idea behind the paper was to learn important feature representations behind both the <strong>content</strong> image and <strong>style</strong> image. Across each subsequent convolutional layer, more complex features are learned. Thus, the key is to learn enough structural information from the <strong>content</strong> image and enough style information from the <strong>style</strong> image to form the perfect blended result image. The paper provides useful information on which layer to get this information from. The entire idea can be broken up into two key components.</p>
+
+<ul>
+  <li>
+    <p>Through empirical evidence, the paper has made it clear that the best results are obtained when we extract information from the 4th convolutional layer for the structural information. (Why we don’t take the output from the 5th convolutional layer remains to be seen. We will compare both to understand their choice.)</p>
+  </li>
+  <li>
+    <p>As for style information, it is difficult to pinpoint a single layer. Style is ambiguous, and requires both simple and complex features to truly be incorporated. The authors of the paper have determined that it is best to include information from each convolutional layer.</p>
+  </li>
+</ul>
+
+<h3 id="loss-function">Loss Function</h3>
+:ET

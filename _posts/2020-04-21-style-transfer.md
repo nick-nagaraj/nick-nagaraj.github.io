@@ -26,7 +26,7 @@ Let's take a look at the original paper, [Gatys et al.](https://www.cv-foundatio
 
 The main idea behind the paper was to learn important feature representations behind both the **content** image and **style** image. Across each subsequent convolutional layer, more complex features are learned. Thus, the key is to learn enough structural information from the **content** image and enough style information from the **style** image to form the perfect blended result image. The paper provides useful information on which layer to get this information from. The entire idea can be broken up into two key components.
 
-* Through empirical evidence, the paper has made it clear that the best results are obtained when we extract information from the 4th convolutional layer for the structural information. (Why we don't take the output from the 5th convolutional layer remains to be seen. We will compare both to understand their choice.)
+* Since high level structural information is best represented in the final convolutional layers, we will be taking the output of the 5th convolutional layer.
 
 * As for style information, it is difficult to pinpoint a single layer. Style is ambiguous, and requires both simple and complex features to truly be incorporated. The authors of the paper have determined that it is best to include information from each convolutional layer.
 
@@ -35,4 +35,18 @@ Traditional loss functions try to quantify the difference between the **ground t
 
 ![Cross_Entropy](/assets/Cross_Entropy.png)
 
-However, this loss function has no practical meaning for our application. What exactly is the "ground truth"? The paper illustrates a custom loss function that consists of two main components.
+However, this loss function has no practical meaning for our application. What exactly is the "ground truth"? The paper introduces a custom loss function that simply consists of the weighted losses of the **content** and **style** image. Taking a look at the loss function,
+
+![Loss_Style](/assets/Loss_Formula.jpeg)
+
+* **L(content)** defines the structural difference between the content image and resultant output image. Intuitively we understand that this should be zero. We want our resultant image to ideally have the exact same structure as our input **content** image. This term is multiplied with weight **α**
+
+* **L(style)** defines the style difference between the content image and resultant output image. Intuitively we understand that this should be zero. We want our resultant image to ideally have the exact same style as our input **style** image. This term is multiplied with weight **β**
+
+What is the value of **α** and **β**? Well athough these weights can be tuned, the paper does suggest a value near 1 for **α** and 1e-6 for **β**
+
+## Implementation
+The framework of choice for this application will be PyTorch. We'll be using a pretrained VGG-19 network, but everything else will be from scratch. Installation instructions for the like will be [here](https://pytorch.org/)
+
+### Setting up VGG-19
+Let's go ahead and define the model.

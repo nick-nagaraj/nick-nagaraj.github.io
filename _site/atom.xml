@@ -4,7 +4,7 @@
  <title>Nikhil Nagaraj</title>
  <link href="http://localhost:4000/atom.xml" rel="self"/>
  <link href="http://localhost:4000/"/>
- <updated>2020-04-25T14:58:26+05:30</updated>
+ <updated>2020-04-26T16:54:41+05:30</updated>
  <id>http://localhost:4000</id>
  <author>
    <name>Nikhil Nagaraj</name>
@@ -41,7 +41,7 @@
 
 &lt;ul&gt;
   &lt;li&gt;
-    &lt;p&gt;Through empirical evidence, the paper has made it clear that the best results are obtained when we extract information from the 4th convolutional layer for the structural information. (Why we don’t take the output from the 5th convolutional layer remains to be seen. We will compare both to understand their choice.)&lt;/p&gt;
+    &lt;p&gt;Since high level structural information is best represented in the final convolutional layers, we will be taking the output of the 5th convolutional layer.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;As for style information, it is difficult to pinpoint a single layer. Style is ambiguous, and requires both simple and complex features to truly be incorporated. The authors of the paper have determined that it is best to include information from each convolutional layer.&lt;/p&gt;
@@ -53,7 +53,25 @@
 
 &lt;p&gt;&lt;img src=&quot;/assets/Cross_Entropy.png&quot; alt=&quot;Cross_Entropy&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;However, this loss function has no practical meaning for our application. What exactly is the “ground truth”? The paper illustrates a custom loss function that consists of two main components.&lt;/p&gt;
+&lt;p&gt;However, this loss function has no practical meaning for our application. What exactly is the “ground truth”? The paper introduces a custom loss function that simply consists of the weighted losses of the &lt;strong&gt;content&lt;/strong&gt; and &lt;strong&gt;style&lt;/strong&gt; image. Taking a look at the loss function,&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/Loss_Formula.jpeg&quot; alt=&quot;Loss_Style&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;L(content)&lt;/strong&gt; defines the structural difference between the content image and resultant output image. Intuitively we understand that this should be zero. We want our resultant image to ideally have the exact same structure as our input &lt;strong&gt;content&lt;/strong&gt; image. This term is multiplied with weight &lt;strong&gt;α&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;L(style)&lt;/strong&gt; defines the style difference between the content image and resultant output image. Intuitively we understand that this should be zero. We want our resultant image to ideally have the exact same style as our input &lt;strong&gt;style&lt;/strong&gt; image. This term is multiplied with weight &lt;strong&gt;β&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;What is the value of &lt;strong&gt;α&lt;/strong&gt; and &lt;strong&gt;β&lt;/strong&gt;? Well athough these weights can be tuned, the paper does suggest a value near 1 for &lt;strong&gt;α&lt;/strong&gt; and 1e-6 for &lt;strong&gt;β&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;implementation&quot;&gt;Implementation&lt;/h2&gt;
+&lt;p&gt;The framework of choice for this application will be PyTorch. We’ll be using a pretrained VGG-19 network, but everything else will be from scratch. Installation instructions for the like will be &lt;a href=&quot;https://pytorch.org/&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;setting-up-vgg-19&quot;&gt;Setting up VGG-19&lt;/h3&gt;
 </content>
  </entry>
  
